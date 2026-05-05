@@ -17,10 +17,10 @@ export default async function SelectPage({
     <main className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-4">
       <div className="max-w-2xl mx-auto">
         <header className="text-center mb-6">
-          <p className="text-3xl">🔥🍖</p>
-          <h1 className="text-2xl font-black tracking-tight">
+          <h1 className="text-3xl font-display font-extrabold tracking-tight">
             {ctx.event.name}
           </h1>
+          <div className="mt-1 inline-block h-1 w-12 rounded-full bg-red-700" />
         </header>
         <GuestSelector
           eventCode={code}

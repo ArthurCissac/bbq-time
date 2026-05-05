@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { FoodIcon } from "@/components/FoodIcon";
 import type { Item } from "@/lib/db/schema";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -34,7 +35,12 @@ function ItemRow({ item, eventId }: { item: Item; eventId: string }) {
     <Card>
       <CardContent className="flex items-center justify-between gap-3 p-3">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <span className="text-2xl shrink-0">{item.emoji}</span>
+          <FoodIcon
+            name={item.name}
+            emoji={item.emoji}
+            size={32}
+            className="shrink-0"
+          />
           <div className="min-w-0">
             <p className="font-semibold truncate">{item.name}</p>
             <div className="flex gap-1.5 mt-0.5 flex-wrap">

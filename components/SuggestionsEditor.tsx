@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { FoodIcon } from "@/components/FoodIcon";
 
 const CATEGORY_LABELS: Record<Category, string> = {
   viande: "🥩 Viande",
@@ -194,7 +195,12 @@ function EditRow({ row }: { row: SuggestionRow }) {
       <Card>
         <CardContent className="flex items-center justify-between gap-3 p-3">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <span className="text-2xl shrink-0">{row.emoji}</span>
+            <FoodIcon
+              name={row.name}
+              emoji={row.emoji}
+              size={32}
+              className="shrink-0"
+            />
             <div className="min-w-0">
               <p className="font-semibold truncate">{row.name}</p>
               <div className="flex gap-1.5 mt-0.5 flex-wrap items-center">

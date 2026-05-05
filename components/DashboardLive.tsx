@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FoodIcon } from "@/components/FoodIcon";
 import { toggleSelectionServed } from "@/lib/actions/admin";
 import type { DashboardData } from "@/lib/dashboard";
 
@@ -153,7 +154,7 @@ export function DashboardLive({
                           <span className="text-xs text-muted-foreground w-4">
                             {isExpanded ? "▾" : "▸"}
                           </span>
-                          <span className="text-xl">{t.emoji}</span>
+                          <FoodIcon name={t.name} emoji={t.emoji} size={28} />
                           <span className="font-medium">{t.name}</span>
                         </span>
                         <div className="flex items-center gap-2">
@@ -254,7 +255,7 @@ export function DashboardLive({
                     className="flex items-center justify-between p-2 rounded bg-green-50 text-muted-foreground line-through"
                   >
                     <span className="flex items-center gap-2">
-                      <span className="text-lg">{t.emoji}</span>
+                      <FoodIcon name={t.name} emoji={t.emoji} size={22} />
                       <span>{t.name}</span>
                     </span>
                     <span>{t.quantity}</span>
@@ -331,8 +332,17 @@ export function DashboardLive({
                               >
                                 {served ? "✓" : ""}
                               </span>
-                              <span className={served ? "line-through" : ""}>
-                                {s.itemEmoji} {s.quantity}× {s.itemName}
+                              <span
+                                className={`flex items-center gap-1.5 ${
+                                  served ? "line-through" : ""
+                                }`}
+                              >
+                                <FoodIcon
+                                  name={s.itemName}
+                                  emoji={s.itemEmoji}
+                                  size={20}
+                                />
+                                {s.quantity}× {s.itemName}
                                 {s.cookingPref ? (
                                   <span className="text-muted-foreground">
                                     {" "}

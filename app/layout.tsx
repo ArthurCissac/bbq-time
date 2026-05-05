@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Bebas_Neue } from "next/font/google";
+import { Inter, Bricolage_Grotesque } from "next/font/google";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const bebas = Bebas_Neue({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: "400",
+  weight: ["600", "700", "800"],
   variable: "--font-display",
 });
 
@@ -25,8 +25,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={cn(inter.variable, bebas.variable)}>
-      <body className="font-sans antialiased">{children}</body>
+    <html lang="fr" className={cn(inter.variable, bricolage.variable)}>
+      <body className="font-sans antialiased bbq-grain">{children}</body>
     </html>
   );
 }

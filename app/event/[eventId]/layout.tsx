@@ -29,8 +29,8 @@ export default async function EventLayout({
             >
               ← Tous les BBQ
             </Link>
-            <h1 className="text-3xl font-black tracking-tight mt-1">
-              🍖 {ev.name}
+            <h1 className="text-3xl font-display font-extrabold tracking-tight mt-1">
+              {ev.name}
             </h1>
             <p className="text-sm text-muted-foreground">
               Code : <code className="font-mono">{ev.code}</code>

@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
+    "@iconify-json/noto": "^1.2.7",
+    "@iconify/react": "^6.0.2",
     "@neondatabase/serverless": "^1.1.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",

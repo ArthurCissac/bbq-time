@@ -23,11 +23,11 @@ export default async function JoinPage({
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-100 via-red-50 to-orange-50 p-4">
       <Card className="w-full max-w-md border-2 border-red-500 shadow-xl">
         <CardHeader className="text-center">
-          <div className="text-6xl mb-2">🔥🍖</div>
-          <CardTitle className="text-3xl font-black tracking-tight">
+          <CardTitle className="text-3xl font-display font-extrabold tracking-tight">
             {ev.name}
           </CardTitle>
-          <p className="text-muted-foreground mt-2">
+          <div className="mx-auto mt-1 h-1 w-12 rounded-full bg-red-700" />
+          <p className="text-muted-foreground mt-3">
             Rejoins le BBQ et choisis ce que tu veux.
           </p>
         </CardHeader>

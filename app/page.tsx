@@ -29,8 +29,9 @@ export default async function Home() {
     <main className="min-h-screen bg-gradient-to-br from-orange-100 via-red-50 to-orange-50 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <header className="text-center relative">
-          <div className="text-6xl">🔥🍖</div>
-          <h1 className="text-5xl font-black tracking-tight">BBQ Time</h1>
+          <h1 className="text-6xl font-display font-extrabold tracking-tight">
+            BBQ <span className="text-red-700">Time</span>
+          </h1>
           <p className="text-muted-foreground mt-2">
             Crée un BBQ, partage le QR, vois ce que tout le monde veut.
           </p>
@@ -143,8 +144,8 @@ export default async function Home() {
                     className="block hover:bg-orange-50/50 transition-colors"
                   >
                     <CardHeader>
-                      <CardTitle className="flex items-center justify-between gap-2">
-                        <span className="truncate">🍖 {ev.name}</span>
+                      <CardTitle className="flex items-center justify-between gap-2 font-display">
+                        <span className="truncate">{ev.name}</span>
                         <code className="text-xs bg-orange-100 text-orange-900 px-2 py-1 rounded font-mono shrink-0">
                           {ev.code}
                         </code>
