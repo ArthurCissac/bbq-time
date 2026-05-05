@@ -98,10 +98,7 @@ export function DashboardLive({
     });
   };
 
-  const visibleTotals = data.totals.filter((t) => !t.allServed);
-  const completedTotals = data.totals.filter((t) => t.allServed);
-
-  const grouped = visibleTotals.reduce<Record<string, typeof visibleTotals>>(
+  const grouped = data.totals.reduce<Record<string, typeof data.totals>>(
     (acc, t) => {
       (acc[t.category] ??= []).push(t);
       return acc;
@@ -140,25 +137,47 @@ export function DashboardLive({
               <div className="space-y-1.5">
                 {list.map((t) => {
                   const isExpanded = expanded.has(t.itemId);
+                  const done = t.allServed;
                   return (
                     <div
                       key={t.itemId}
-                      className="rounded overflow-hidden border bg-orange-50"
+                      className={`rounded overflow-hidden border transition-colors ${
+                        done
+                          ? "bg-green-50/60 border-green-200"
+                          : "bg-orange-50"
+                      }`}
                     >
                       <button
                         type="button"
                         onClick={() => toggleExpand(t.itemId)}
-                        className="w-full flex items-center justify-between p-2 hover:bg-orange-100 transition-colors text-left"
+                        className={`w-full flex items-center justify-between p-2 transition-colors text-left ${
+                          done ? "hover:bg-green-100" : "hover:bg-orange-100"
+                        }`}
                       >
                         <span className="flex items-center gap-2">
                           <span className="text-xs text-muted-foreground w-4">
                             {isExpanded ? "▾" : "▸"}
                           </span>
                           <FoodIcon name={t.name} emoji={t.emoji} size={28} />
-                          <span className="font-medium">{t.name}</span>
+                          <span
+                            className={`font-medium ${
+                              done ? "line-through text-muted-foreground" : ""
+                            }`}
+                          >
+                            {t.name}
+                          </span>
+                          {done ? (
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] border-green-500 text-green-700"
+                            >
+                              ✓ Tout servi
+                            </Badge>
+                          ) : null}
                         </span>
                         <div className="flex items-center gap-2">
                           {t.hasCookingPref &&
+                            !done &&
                             Object.entries(t.cookingBreakdown).map(
                               ([pref, q]) => (
                                 <Badge
@@ -170,7 +189,11 @@ export function DashboardLive({
                                 </Badge>
                               ),
                             )}
-                          <span className="text-xl font-black text-red-600 min-w-[2rem] text-right">
+                          <span
+                            className={`text-xl font-black min-w-[2rem] text-right ${
+                              done ? "text-muted-foreground" : "text-red-600"
+                            }`}
+                          >
                             {t.remainingQty}
                             {t.availableQty !== null ? (
                               <span className="text-sm text-muted-foreground font-normal">
@@ -232,37 +255,15 @@ export function DashboardLive({
               </div>
             </div>
           ))}
-          {visibleTotals.length === 0 && completedTotals.length === 0 ? (
+          {data.totals.length === 0 ? (
             <p className="text-muted-foreground italic">
               Aucune commande pour l'instant.
             </p>
           ) : null}
-          {visibleTotals.length === 0 && completedTotals.length > 0 ? (
+          {data.totals.length > 0 && data.totals.every((t) => t.allServed) ? (
             <p className="text-green-700 font-medium text-center py-2">
               ✓ Tout a été servi !
             </p>
-          ) : null}
-
-          {completedTotals.length > 0 ? (
-            <details className="text-sm">
-              <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                ✓ Servis ({completedTotals.length})
-              </summary>
-              <div className="mt-2 space-y-1">
-                {completedTotals.map((t) => (
-                  <div
-                    key={t.itemId}
-                    className="flex items-center justify-between p-2 rounded bg-green-50 text-muted-foreground line-through"
-                  >
-                    <span className="flex items-center gap-2">
-                      <FoodIcon name={t.name} emoji={t.emoji} size={22} />
-                      <span>{t.name}</span>
-                    </span>
-                    <span>{t.quantity}</span>
-                  </div>
-                ))}
-              </div>
-            </details>
           ) : null}
         </CardContent>
       </Card>
