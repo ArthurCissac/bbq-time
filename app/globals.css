@@ -2,26 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 36 100% 99%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 0 70% 47%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 32 95% 95%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 32 30% 95%;
+    --muted-foreground: 215 16% 46%;
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 32 30% 88%;
+    --input: 32 30% 88%;
+    --ring: 0 70% 47%;
+    --radius: 0.625rem;
   }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  .dark {
+    --background: 222 30% 10%;
+    --foreground: 0 0% 98%;
+    --card: 222 25% 14%;
+    --card-foreground: 0 0% 98%;
+    --popover: 222 25% 14%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 70% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 20% 20%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 222 20% 20%;
+    --muted-foreground: 215 16% 65%;
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 20% 20%;
+    --input: 222 20% 20%;
+    --ring: 0 70% 55%;
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  .font-display {
+    font-family: var(--font-display), system-ui, sans-serif;
+  }
+}
+
+@media print {
+  body {
+    background: white !important;
+  }
+  .print\:hidden {
+    display: none !important;
   }
 }

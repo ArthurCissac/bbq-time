@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔥 BBQ Time
 
-## Getting Started
+App perso pour gérer les BBQ entre potes. Ouvre l'URL → tu es admin (crée/édite tous les BBQ). Tu génères un QR code → tes invités scannent → ils choisissent leurs items. Dashboard temps réel.
 
-First, run the development server:
+**Pas d'auth.** L'admin est public (usage famille/potes). Quiconque connaît l'URL peut voir/éditer tous les BBQ. Le QR pointe vers une page invité dédiée (`/bbq/[code]`).
+
+**Stack** : Next.js 14 · Neon (Postgres serverless) · Drizzle ORM · Tailwind + shadcn/ui · SSE realtime.
+
+## Setup local
+
+### 1. Crée un projet Neon (gratuit)
+
+1. https://console.neon.tech → **Create project** (region eu-central-1).
+2. Copie la **Pooled connection string** → c'est ton `DATABASE_URL`.
+3. Optionnel : crée une **branche `dev`** dans Neon pour isoler la prod.
+
+### 2. (Optionnel) Upstash Redis pour rate limit
+
+1. https://console.upstash.com → Redis → Create Database (free tier).
+2. Copie `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`.
+
+### 3. .env.local
+
+```bash
+cp .env.example .env.local
+# Remplir DATABASE_URL avec la string Neon
+```
+
+### 4. Migration DB
+
+```bash
+npx drizzle-kit push     # pousse le schéma sur Neon
+```
+
+### 5. Run
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3040
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Flow
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Toi (et n'importe qui sur l'URL)** : `/` → vois tous les BBQ + crée un nouveau → ajoute items → onglet QR → imprime/partage.
+- **Invité** : scanne QR → entre prénom → +/- items, choisit cuisson → save auto.
+- **Dashboard live** : se met à jour toutes les 2s via SSE.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Routes
 
-## Learn More
+- `/` — Dashboard admin (création + liste)
+- `/event/[id]/items` — CRUD items du BBQ
+- `/event/[id]/qr` — QR code à imprimer
+- `/event/[id]/dashboard` — Live des choix invités
+- `/bbq/[code]` — Page invité (saisie prénom)
+- `/bbq/[code]/select` — Page invité (sélection items)
 
-To learn more about Next.js, take a look at the following resources:
+## Deploy Vercel + Neon
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Push sur GitHub.
+2. Vercel → Import → ajoute l'intégration **Neon** (`DATABASE_URL` auto-injectée).
+3. Vars Vercel optionnelles : `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
+4. `npx drizzle-kit push` une fois avec la prod URL.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Sécurité
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Inputs validées Zod
+- Token guest = cookie httpOnly+secure+sameSite=lax
+- Headers CSP/HSTS/X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy
+- Rate limit Upstash optionnel
+- ⚠️ **Pas d'auth admin** — pour usage privé entre potes uniquement, ne pas exposer publiquement sans rajouter une auth basique

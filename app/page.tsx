@@ -1,101 +1,198 @@
-import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { desc } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { events } from "@/lib/db/schema";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { DateField } from "@/components/DateField";
+import { createEvent, activateEvent } from "@/lib/actions/admin";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const allEvents = await db.query.events.findMany({
+    orderBy: [desc(events.createdAt)],
+    limit: 20,
+  });
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="min-h-screen bg-gradient-to-br from-orange-100 via-red-50 to-orange-50 p-4 md:p-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <header className="text-center relative">
+          <div className="text-6xl">🔥🍖</div>
+          <h1 className="text-5xl font-black tracking-tight">BBQ Time</h1>
+          <p className="text-muted-foreground mt-2">
+            Crée un BBQ, partage le QR, vois ce que tout le monde veut.
+          </p>
+          <Link
+            href="/suggestions"
+            className="inline-block mt-3 text-sm text-red-600 hover:underline"
+          >
+            ⚡ Modifier les suggestions →
+          </Link>
+        </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <Card className="border-2 border-orange-200">
+          <CardHeader>
+            <CardTitle>🎩 Nouveau BBQ</CardTitle>
+            <CardDescription>
+              Crée un événement, ajoute les items, partage le QR avec tes invités.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              action={async (formData) => {
+                "use server";
+                await createEvent({
+                  name: formData.get("name") as string,
+                  eventDate: formData.get("eventDate")
+                    ? new Date(formData.get("eventDate") as string)
+                    : null,
+                });
+              }}
+              className="grid gap-4 sm:grid-cols-[1fr_auto_auto] sm:items-end"
+            >
+              <div className="space-y-2">
+                <Label htmlFor="name">Nom du BBQ</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  required
+                  maxLength={80}
+                  placeholder="BBQ retour de Cécile"
+                />
+              </div>
+              <DateField />
+              <Button type="submit" className="bg-red-600 hover:bg-red-700">
+                Créer 🔥
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>📲 Rejoindre un BBQ</CardTitle>
+            <CardDescription>
+              Si quelqu'un t'a partagé un code (sans QR sous la main).
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              action={async (formData) => {
+                "use server";
+                const code = String(formData.get("code") ?? "")
+                  .trim()
+                  .toLowerCase();
+                if (code) redirect(`/bbq/${code}`);
+              }}
+              className="flex gap-2"
+            >
+              <Label htmlFor="code" className="sr-only">
+                Code BBQ
+              </Label>
+              <Input
+                id="code"
+                name="code"
+                required
+                placeholder="ex: k3xa9p"
+                maxLength={12}
+                className="font-mono uppercase tracking-widest"
+              />
+              <Button type="submit" variant="outline">
+                Rejoindre
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        <section className="space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h2 className="text-xl font-bold">Tous les BBQ</h2>
+            <p className="text-xs text-muted-foreground">
+              Le QR fixe (3D) pointe vers le BBQ marqué <strong>● Actif</strong>
+            </p>
+          </div>
+          {allEvents.length === 0 ? (
+            <p className="text-muted-foreground italic">
+              Aucun BBQ pour l'instant. Lance le premier !
+            </p>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {allEvents.map((ev) => (
+                <Card
+                  key={ev.id}
+                  className={
+                    ev.isActive
+                      ? "border-2 border-green-500 bg-green-50/30 overflow-hidden"
+                      : "border-2 hover:border-red-400 transition-colors overflow-hidden"
+                  }
+                >
+                  <Link
+                    href={`/event/${ev.id}/items`}
+                    className="block hover:bg-orange-50/50 transition-colors"
+                  >
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between gap-2">
+                        <span className="truncate">🍖 {ev.name}</span>
+                        <code className="text-xs bg-orange-100 text-orange-900 px-2 py-1 rounded font-mono shrink-0">
+                          {ev.code}
+                        </code>
+                      </CardTitle>
+                      <CardDescription>
+                        {ev.eventDate
+                          ? new Date(ev.eventDate).toLocaleDateString("fr-FR", {
+                              weekday: "long",
+                              day: "numeric",
+                              month: "long",
+                            })
+                          : "Pas de date"}
+                      </CardDescription>
+                    </CardHeader>
+                  </Link>
+                  <div className="px-6 pb-4 flex justify-end">
+                    {ev.isActive ? (
+                      <Badge className="bg-green-600 hover:bg-green-700">
+                        ● Actif
+                      </Badge>
+                    ) : (
+                      <form
+                        action={async () => {
+                          "use server";
+                          await activateEvent(ev.id);
+                        }}
+                      >
+                        <Button
+                          type="submit"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs"
+                        >
+                          Activer
+                        </Button>
+                      </form>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <p className="text-center text-xs text-muted-foreground pt-8">
+          Made with 🔥 by Nexflow
+        </p>
+      </div>
+    </main>
   );
 }
