@@ -59,18 +59,23 @@ export function DashboardLive({
     setData((d) => ({
       ...d,
       totals: d.totals.map((t) => {
-        const stillPending = t.pending.filter(
-          (p) => p.selectionId !== selectionId,
+        const target = t.participants.find(
+          (p) => p.selectionId === selectionId,
         );
-        const removed = t.pending.find((p) => p.selectionId === selectionId);
-        if (currentlyServed) return t;
-        if (!removed) return t;
-        const newRemaining = t.remainingQty - removed.quantity;
+        if (!target) return t;
+        const newParticipants = t.participants.map((p) =>
+          p.selectionId === selectionId
+            ? { ...p, served: !currentlyServed }
+            : p,
+        );
+        const newRemaining = newParticipants
+          .filter((p) => !p.served)
+          .reduce((acc, p) => acc + p.quantity, 0);
         return {
           ...t,
-          pending: stillPending,
+          participants: newParticipants,
           remainingQty: newRemaining,
-          allServed: newRemaining === 0,
+          allServed: newParticipants.length > 0 && newRemaining === 0,
         };
       }),
       guests: d.guests.map((g) => ({
@@ -206,43 +211,75 @@ export function DashboardLive({
                       </button>
                       {isExpanded ? (
                         <div className="border-t bg-white p-2 space-y-1">
-                          {t.pending.length === 0 ? (
+                          {t.participants.length === 0 ? (
                             <p className="text-xs text-muted-foreground italic px-2 py-1">
-                              Tout est servi.
+                              Personne n'a commandé cet item.
                             </p>
                           ) : (
-                            t.pending.map((p) => (
+                            t.participants.map((p) => (
                               <button
                                 key={p.selectionId}
                                 type="button"
                                 onClick={() =>
-                                  onToggleSelection(p.selectionId, false)
+                                  onToggleSelection(p.selectionId, p.served)
                                 }
                                 disabled={pendingIds.has(p.selectionId)}
-                                className="w-full flex items-center justify-between gap-2 p-2 rounded hover:bg-green-50 border border-transparent hover:border-green-200 disabled:cursor-wait"
+                                className={`w-full flex items-center justify-between gap-2 p-2 rounded border disabled:cursor-wait transition-colors ${
+                                  p.served
+                                    ? "bg-red-50 border-red-200 hover:bg-red-100"
+                                    : "border-transparent hover:bg-green-50 hover:border-green-200"
+                                }`}
                               >
-                                <span className="flex items-center gap-2">
-                                  <span className="inline-flex items-center justify-center w-5 h-5 rounded border-2 border-gray-300 text-xs">
-                                    {""}
+                                <span
+                                  className={`flex items-center gap-2 ${
+                                    p.served
+                                      ? "line-through text-red-700"
+                                      : ""
+                                  }`}
+                                >
+                                  <span
+                                    className={`inline-flex items-center justify-center w-5 h-5 rounded border-2 text-xs ${
+                                      p.served
+                                        ? "bg-red-600 border-red-600 text-white"
+                                        : "border-gray-300"
+                                    }`}
+                                  >
+                                    {p.served ? "✓" : ""}
                                   </span>
                                   <span className="font-medium">
                                     {p.guestName}
                                   </span>
-                                  <span className="text-sm text-muted-foreground">
+                                  <span
+                                    className={
+                                      p.served
+                                        ? "text-sm text-red-600/70"
+                                        : "text-sm text-muted-foreground"
+                                    }
+                                  >
                                     {p.quantity}×
                                   </span>
                                   {p.cookingPref ? (
                                     <Badge
                                       variant="outline"
-                                      className="text-[10px]"
+                                      className={`text-[10px] ${
+                                        p.served
+                                          ? "border-red-300 text-red-700"
+                                          : ""
+                                      }`}
                                     >
                                       {COOKING_LABELS[p.cookingPref] ??
                                         p.cookingPref}
                                     </Badge>
                                   ) : null}
                                 </span>
-                                <span className="text-xs text-green-700 font-medium">
-                                  Marquer servi ✓
+                                <span
+                                  className={`text-xs font-medium ${
+                                    p.served
+                                      ? "text-red-700"
+                                      : "text-green-700"
+                                  }`}
+                                >
+                                  {p.served ? "Annuler" : "Marquer servi ✓"}
                                 </span>
                               </button>
                             ))

@@ -15,13 +15,14 @@ export type DashboardData = {
     remainingQty: number;
     availableQty: number | null;
     cookingBreakdown: Record<string, number>;
-    pending: Array<{
+    participants: Array<{
       selectionId: string;
       guestId: string;
       guestName: string;
       quantity: number;
       cookingPref: string | null;
       notes: string | null;
+      served: boolean;
     }>;
     allServed: boolean;
   }>;
@@ -79,28 +80,29 @@ export async function getDashboardData(
     const cookingBreakdown: Record<string, number> = {};
     let quantity = 0;
     let remainingQty = 0;
-    const pending: Array<{
+    const participants: Array<{
       selectionId: string;
       guestId: string;
       guestName: string;
       quantity: number;
       cookingPref: string | null;
       notes: string | null;
+      served: boolean;
     }> = [];
     for (const s of selsForItem) {
       quantity += s.quantity;
-      if (!s.servedAt) {
-        remainingQty += s.quantity;
-        const guest = guestMap.get(s.guestId);
-        pending.push({
-          selectionId: s.id,
-          guestId: s.guestId,
-          guestName: guest?.firstName ?? "?",
-          quantity: s.quantity,
-          cookingPref: s.cookingPref,
-          notes: s.notes,
-        });
-      }
+      const isServed = !!s.servedAt;
+      if (!isServed) remainingQty += s.quantity;
+      const guest = guestMap.get(s.guestId);
+      participants.push({
+        selectionId: s.id,
+        guestId: s.guestId,
+        guestName: guest?.firstName ?? "?",
+        quantity: s.quantity,
+        cookingPref: s.cookingPref,
+        notes: s.notes,
+        served: isServed,
+      });
       if (s.cookingPref) {
         cookingBreakdown[s.cookingPref] =
           (cookingBreakdown[s.cookingPref] ?? 0) + s.quantity;
@@ -116,7 +118,7 @@ export async function getDashboardData(
       remainingQty,
       availableQty: item.availableQty,
       cookingBreakdown,
-      pending,
+      participants,
       allServed: selsForItem.length > 0 && remainingQty === 0,
     };
   });
