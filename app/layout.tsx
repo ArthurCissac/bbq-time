@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 
 const inter = Inter({
@@ -31,8 +32,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={cn(inter.variable, fraunces.variable)}>
-      <body className="font-sans antialiased bbq-grain min-h-screen">{children}</body>
+    <html
+      lang="fr"
+      className={cn(inter.variable, fraunces.variable)}
+      suppressHydrationWarning
+    >
+      <body className="font-sans antialiased bbq-grain min-h-screen">
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

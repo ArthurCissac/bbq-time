@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DateField } from "@/components/DateField";
 import { Logo, LogoMark } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { createEvent, activateEvent } from "@/lib/actions/admin";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +24,10 @@ export default async function Home() {
       <div className="max-w-3xl mx-auto space-y-12 md:space-y-16">
         {/* Hero */}
         <header className="pt-6 md:pt-10">
-          <Logo size="lg" className="mb-10" />
+          <div className="flex items-center justify-between mb-10">
+            <Logo size="lg" />
+            <ThemeToggle />
+          </div>
           <h1 className="font-display-tight text-5xl md:text-7xl font-medium leading-[0.95]">
             Qui veut <span className="text-ember">manger</span> quoi.
           </h1>

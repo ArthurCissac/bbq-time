@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { events } from "@/lib/db/schema";
 import { EventNav } from "@/components/EventNav";
 import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default async function EventLayout({
   children,
@@ -27,12 +28,15 @@ export default async function EventLayout({
             <Link href="/" aria-label="Retour à l'accueil">
               <Logo size="sm" />
             </Link>
-            <Link
-              href="/"
-              className="text-xs text-muted-foreground hover:text-foreground tracking-wider uppercase border-b border-transparent hover:border-foreground transition-colors pb-0.5"
-            >
-              ← Tous les BBQ
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/"
+                className="text-xs text-muted-foreground hover:text-foreground tracking-wider uppercase border-b border-transparent hover:border-foreground transition-colors pb-0.5"
+              >
+                ← Tous les BBQ
+              </Link>
+              <ThemeToggle />
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">

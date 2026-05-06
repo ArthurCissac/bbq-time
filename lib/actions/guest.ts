@@ -13,6 +13,7 @@ import {
   type UpsertSelectionInput,
 } from "@/lib/schemas";
 import { checkLimit, joinLimiter, guestLimiter } from "@/lib/rate-limit";
+import { notifyEvent } from "@/lib/push";
 
 const GUEST_COOKIE = "bbq_guest";
 
@@ -71,6 +72,15 @@ export async function joinEvent(input: JoinEventInput) {
 
   setGuestCookie(event.id, created.token);
   revalidatePath(`/admin/${event.id}/dashboard`);
+
+  // Notify subscribers (organisateurs) — non-bloquant
+  notifyEvent(event.id, {
+    title: `🍖 ${created.firstName} a rejoint le BBQ`,
+    body: event.name,
+    url: `/event/${event.id}/dashboard`,
+    tag: `join-${created.id}`,
+  }).catch(() => {});
+
   redirect(`/bbq/${event.code}/select`);
 }
 

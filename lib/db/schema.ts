@@ -106,9 +106,31 @@ export const suggestions = pgTable(
 
 export type SuggestionRow = typeof suggestions.$inferSelect;
 
+export const pushSubscriptions = pgTable(
+  "push_subscriptions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    eventId: uuid("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    endpoint: text("endpoint").notNull(),
+    p256dh: text("p256dh").notNull(),
+    auth: text("auth").notNull(),
+    label: text("label"),
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (t) => ({
+    eventIdx: index("push_subs_event_idx").on(t.eventId),
+    endpointIdx: uniqueIndex("push_subs_endpoint_idx").on(t.endpoint),
+  }),
+);
+
+export type PushSubscriptionRow = typeof pushSubscriptions.$inferSelect;
+
 export const eventsRelations = relations(events, ({ many }) => ({
   items: many(items),
   guests: many(guests),
+  pushSubscriptions: many(pushSubscriptions),
 }));
 
 export const itemsRelations = relations(items, ({ one, many }) => ({
