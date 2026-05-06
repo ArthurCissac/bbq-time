@@ -59,8 +59,8 @@ export async function getDashboardData(
 
   const eventGuests = await db.query.guests.findMany({
     where: eq(guests.eventId, eventId),
-    orderBy: (g, { asc }) => [asc(g.joinedAt)],
   });
+  eventGuests.sort((a, b) => a.joinedAt.getTime() - b.joinedAt.getTime());
 
   const guestIds = eventGuests.map((g) => g.id);
   const allSelections =
