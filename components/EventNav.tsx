@@ -16,14 +16,14 @@ export function EventNav({ eventId }: { eventId: string }) {
   const active = useSelectedLayoutSegment();
 
   return (
-    <nav className="inline-flex items-center bg-secondary rounded-full p-1 gap-0.5 relative">
+    <nav className="flex md:inline-flex items-center bg-secondary rounded-full p-1 gap-0.5 relative w-full md:w-auto">
       {TABS.map((tab) => {
         const isActive = active === tab.segment;
         return (
           <Link
             key={tab.segment}
             href={`/event/${eventId}/${tab.segment}`}
-            className="relative px-4 py-1.5 text-sm font-medium whitespace-nowrap"
+            className="relative flex-1 md:flex-none px-4 py-1.5 text-sm font-medium whitespace-nowrap text-center"
           >
             {isActive ? (
               <motion.span
