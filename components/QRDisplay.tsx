@@ -82,7 +82,7 @@ export function QRDisplay({ url, code }: { url: string; code: string }) {
         </code>
       </div>
 
-      <div className="flex gap-2 flex-wrap print:hidden">
+      <div className="flex justify-center print:hidden">
         <Button onClick={copyURL} variant="outline">
           📋 Copier le lien
         </Button>
