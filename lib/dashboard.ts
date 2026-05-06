@@ -52,23 +52,29 @@ export async function getDashboardData(
   });
   if (!ev) return null;
 
-  const eventItems = await db.query.items.findMany({
-    where: eq(items.eventId, eventId),
-    orderBy: (i, { asc }) => [asc(i.sortOrder), asc(i.name)],
+  const eventItems = await db
+    .select()
+    .from(items)
+    .where(eq(items.eventId, eventId));
+  eventItems.sort((a, b) => {
+    if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
+    return a.name.localeCompare(b.name);
   });
 
-  const eventGuests = await db.query.guests.findMany({
-    where: eq(guests.eventId, eventId),
-  });
+  const eventGuests = await db
+    .select()
+    .from(guests)
+    .where(eq(guests.eventId, eventId));
   eventGuests.sort((a, b) => a.joinedAt.getTime() - b.joinedAt.getTime());
 
   const guestIds = eventGuests.map((g) => g.id);
   const allSelections =
     guestIds.length === 0
       ? []
-      : await db.query.selections.findMany({
-          where: inArray(selections.guestId, guestIds),
-        });
+      : await db
+          .select()
+          .from(selections)
+          .where(inArray(selections.guestId, guestIds));
 
   const itemMap = new Map(eventItems.map((i) => [i.id, i]));
   const guestMap = new Map(eventGuests.map((g) => [g.id, g]));

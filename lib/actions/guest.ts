@@ -103,26 +103,33 @@ export async function getGuestContext(code: string) {
   });
   if (!guest) return { event, guest: null, items: [], selections: [] };
 
-  const eventItems = await db.query.items.findMany({
-    where: eq(items.eventId, event.id),
-    orderBy: (i, { asc }) => [asc(i.sortOrder), asc(i.name)],
+  const eventItems = await db
+    .select()
+    .from(items)
+    .where(eq(items.eventId, event.id));
+  eventItems.sort((a, b) => {
+    if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
+    return a.name.localeCompare(b.name);
   });
 
-  const guestSelections = await db.query.selections.findMany({
-    where: eq(selections.guestId, guest.id),
-  });
+  const guestSelections = await db
+    .select()
+    .from(selections)
+    .where(eq(selections.guestId, guest.id));
 
   // Sum of quantities committed by OTHER guests for each item
-  const otherGuests = await db.query.guests.findMany({
-    where: and(eq(guests.eventId, event.id), ne(guests.id, guest.id)),
-  });
+  const otherGuests = await db
+    .select()
+    .from(guests)
+    .where(and(eq(guests.eventId, event.id), ne(guests.id, guest.id)));
   const otherIds = otherGuests.map((g) => g.id);
   const otherSels =
     otherIds.length === 0
       ? []
-      : await db.query.selections.findMany({
-          where: inArray(selections.guestId, otherIds),
-        });
+      : await db
+          .select()
+          .from(selections)
+          .where(inArray(selections.guestId, otherIds));
   const committedByOthers: Record<string, number> = {};
   for (const s of otherSels) {
     committedByOthers[s.itemId] =
