@@ -50,7 +50,7 @@ export function Wordmark({
         className,
       )}
     >
-      brasero
+      barbecue
     </span>
   );
 }

@@ -23,15 +23,16 @@ export default async function Home() {
       <div className="max-w-3xl mx-auto space-y-12 md:space-y-16">
         {/* Hero */}
         <header className="pt-6 md:pt-10">
-          <Logo size="lg" className="mb-8" />
+          <Logo size="lg" className="mb-10" />
           <h1 className="font-display-tight text-5xl md:text-7xl font-medium leading-[0.95]">
-            La liste de courses
-            <br />
-            <span className="text-ember">d'un BBQ</span>, simplifiée.
+            Qui veut <span className="text-ember">manger</span> quoi.
           </h1>
+          <p className="mt-4 font-display text-2xl md:text-3xl text-foreground/85 leading-tight tracking-tight">
+            Le BBQ entre amis, sans le casse-tête.
+          </p>
           <p className="mt-6 text-lg text-muted-foreground max-w-xl leading-relaxed">
-            Crée un BBQ. Imprime ton QR. Tes invités scannent et choisissent.
-            Tu sais exactement quoi acheter, et qui veut quoi.
+            Tes potes scannent le QR posé sur la table. Chacun choisit ce qu'il
+            a envie de manger. Toi, tu vois tout.
           </p>
           <div className="mt-6">
             <Link
@@ -195,7 +196,7 @@ export default async function Home() {
 
         <footer className="pt-6 pb-10 text-center">
           <p className="text-xs text-muted-foreground tracking-wider uppercase">
-            Brasero · par <a href="https://nexflow.fr" className="hover:text-foreground transition-colors">Nexflow</a>
+            Barbecue · par <a href="https://nexflow.fr" className="hover:text-foreground transition-colors">Nexflow</a>
           </p>
         </footer>
       </div>

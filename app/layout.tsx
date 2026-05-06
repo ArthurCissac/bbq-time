@@ -16,8 +16,9 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Brasero — la liste de courses du BBQ",
-  description: "Brasero. Crée un BBQ. Partage le QR. Vois ce que tout le monde veut.",
+  title: "Barbecue — qui veut manger quoi",
+  description:
+    "Le BBQ entre amis, sans le casse-tête. Tes potes scannent, choisissent, tu vois tout.",
 };
 
 export const viewport: Viewport = {

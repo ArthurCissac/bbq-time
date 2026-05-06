@@ -18,7 +18,7 @@ export default async function SelectPage({
       <div className="max-w-2xl mx-auto">
         <header className="text-center mb-8">
           <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
-            Brasero
+            Barbecue
           </p>
           <h1 className="font-display-tight text-4xl font-medium mt-2 leading-tight">
             {ctx.event.name}

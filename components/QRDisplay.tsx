@@ -48,7 +48,7 @@ export function QRDisplay({ url, code }: { url: string; code: string }) {
             {/* Bandeau supérieur */}
             <div className="text-center mb-4">
               <p className="font-display font-medium text-4xl tracking-[-0.04em] text-[#2C1810] leading-none">
-                brasero
+                barbecue
               </p>
               <div className="mx-auto h-px w-14 bg-[#2C1810] mt-3" />
               <p className="text-[10px] uppercase tracking-[0.25em] text-[#2C1810]/70 mt-2.5 font-medium">
