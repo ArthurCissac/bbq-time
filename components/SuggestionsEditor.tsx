@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FoodIcon } from "@/components/FoodIcon";
+import { EmojiPicker } from "@/components/EmojiPicker";
 
 const CATEGORY_LABELS: Record<Category, string> = {
   viande: "🥩 Viande",
@@ -35,6 +35,7 @@ function AddRow() {
   const [category, setCategory] = useState<Category>("viande");
   const [hasCookingPref, setHasCookingPref] = useState(false);
   const [defaultQty, setDefaultQty] = useState<string>("10");
+  const [description, setDescription] = useState("");
   const [pending, startTransition] = useTransition();
 
   const [emojiManual, setEmojiManual] = useState(false);
@@ -57,6 +58,10 @@ function AddRow() {
         category,
         hasCookingPref,
         defaultQty: Number(defaultQty || 0),
+        description:
+          category === "autre" && description.trim()
+            ? description.trim()
+            : null,
         sortOrder: 0,
       });
       setName("");
@@ -64,6 +69,7 @@ function AddRow() {
       setCategory("viande");
       setHasCookingPref(false);
       setDefaultQty("10");
+      setDescription("");
       setEmojiManual(false);
       setCategoryManual(false);
       setCookingManual(false);
@@ -82,14 +88,12 @@ function AddRow() {
           <div className="grid gap-3 grid-cols-[80px_1fr]">
             <div className="space-y-1">
               <Label>Emoji</Label>
-              <Input
+              <EmojiPicker
                 value={emoji}
                 onChange={(e) => {
-                  setEmoji(e.target.value);
+                  setEmoji(e);
                   setEmojiManual(true);
                 }}
-                maxLength={4}
-                className="text-center text-lg"
               />
             </div>
             <div className="space-y-1">
@@ -146,12 +150,28 @@ function AddRow() {
             </label>
           </div>
 
+          {category === "autre" ? (
+            <div className="space-y-1">
+              <Label>Décris cette suggestion</Label>
+              <Input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={200}
+                placeholder="ex: Mes brochettes maison, sauce piquante de Tonton"
+              />
+              <p className="text-xs text-muted-foreground">
+                Optionnel — utile pour préciser l'item.
+              </p>
+            </div>
+          ) : null}
+
           <Button
             type="submit"
             disabled={pending || !name.trim()}
             className="w-full bg-red-600 hover:bg-red-700"
           >
-            Ajouter {emoji} {name.trim() || "..."}
+            Ajouter <span className="ml-1">{emoji}</span>{" "}
+            {name.trim() || "..."}
           </Button>
         </form>
       </CardContent>
@@ -166,6 +186,7 @@ function EditRow({ row }: { row: SuggestionRow }) {
   const [category, setCategory] = useState<Category>(row.category as Category);
   const [hasCookingPref, setHasCookingPref] = useState(row.hasCookingPref);
   const [defaultQty, setDefaultQty] = useState(row.defaultQty.toString());
+  const [description, setDescription] = useState(row.description ?? "");
   const [pending, startTransition] = useTransition();
 
   const save = () => {
@@ -177,6 +198,10 @@ function EditRow({ row }: { row: SuggestionRow }) {
         category,
         hasCookingPref,
         defaultQty: Number(defaultQty || 0),
+        description:
+          category === "autre" && description.trim()
+            ? description.trim()
+            : null,
         sortOrder: row.sortOrder,
       });
       setEditing(false);
@@ -195,12 +220,7 @@ function EditRow({ row }: { row: SuggestionRow }) {
       <Card>
         <CardContent className="flex items-center justify-between gap-3 p-3">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <FoodIcon
-              name={row.name}
-              emoji={row.emoji}
-              size={32}
-              className="shrink-0"
-            />
+            <span className="text-3xl shrink-0 leading-none">{row.emoji}</span>
             <div className="min-w-0">
               <p className="font-semibold truncate">{row.name}</p>
               <div className="flex gap-1.5 mt-0.5 flex-wrap items-center">
@@ -216,6 +236,11 @@ function EditRow({ row }: { row: SuggestionRow }) {
                   Défaut : {row.defaultQty}
                 </span>
               </div>
+              {row.description ? (
+                <p className="text-xs text-muted-foreground italic mt-0.5 truncate">
+                  {row.description}
+                </p>
+              ) : null}
             </div>
           </div>
           <div className="flex gap-1 shrink-0">
@@ -244,13 +269,8 @@ function EditRow({ row }: { row: SuggestionRow }) {
   return (
     <Card className="border-2 border-red-300">
       <CardContent className="p-3 space-y-3">
-        <div className="grid gap-2 grid-cols-[60px_1fr]">
-          <Input
-            value={emoji}
-            onChange={(e) => setEmoji(e.target.value)}
-            maxLength={4}
-            className="text-center text-lg"
-          />
+        <div className="grid gap-2 grid-cols-[80px_1fr]">
+          <EmojiPicker value={emoji} onChange={setEmoji} />
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -286,6 +306,14 @@ function EditRow({ row }: { row: SuggestionRow }) {
             Cuisson
           </label>
         </div>
+        {category === "autre" ? (
+          <Input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            maxLength={200}
+            placeholder="Description (optionnel)"
+          />
+        ) : null}
         <div className="flex gap-2 justify-end">
           <Button
             variant="outline"

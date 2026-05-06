@@ -5,7 +5,6 @@ import { upsertSelection } from "@/lib/actions/guest";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FoodIcon } from "@/components/FoodIcon";
 import { toast } from "sonner";
 import type { Item, Selection } from "@/lib/db/schema";
 
@@ -119,11 +118,21 @@ export function GuestSelector({
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0">
-                        <FoodIcon name={item.name} emoji={item.emoji} size={36} />
+                        <span
+                          className="text-3xl leading-none shrink-0"
+                          aria-hidden
+                        >
+                          {item.emoji}
+                        </span>
                         <div className="min-w-0">
                           <p className="font-bold text-lg truncate font-display">
                             {item.name}
                           </p>
+                          {item.description ? (
+                            <p className="text-xs text-muted-foreground italic truncate">
+                              {item.description}
+                            </p>
+                          ) : null}
                           {cap !== null ? (
                             <p
                               className={`text-xs font-medium ${

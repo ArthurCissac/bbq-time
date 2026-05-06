@@ -76,6 +76,7 @@ export async function upsertItem(input: UpsertItemInput) {
         category: data.category,
         hasCookingPref: data.hasCookingPref,
         availableQty: data.availableQty ?? null,
+        description: data.description ?? null,
         sortOrder: data.sortOrder,
       })
       .where(and(eq(items.id, data.id), eq(items.eventId, data.eventId)));
@@ -87,6 +88,7 @@ export async function upsertItem(input: UpsertItemInput) {
       category: data.category,
       hasCookingPref: data.hasCookingPref,
       availableQty: data.availableQty ?? null,
+      description: data.description ?? null,
       sortOrder: data.sortOrder,
     });
   }

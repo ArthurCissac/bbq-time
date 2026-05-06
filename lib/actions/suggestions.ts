@@ -14,6 +14,13 @@ const suggestionSchema = z.object({
   category: z.enum(["viande", "accompagnement", "boisson", "dessert", "autre"]),
   hasCookingPref: z.boolean(),
   defaultQty: z.coerce.number().int().min(0).max(9999),
+  description: z
+    .string()
+    .trim()
+    .max(200)
+    .optional()
+    .nullable()
+    .transform((s) => (s ? s.replace(/<[^>]*>/g, "") : s)),
   sortOrder: z.coerce.number().int().min(0).max(999).default(0),
 });
 
@@ -36,6 +43,7 @@ export async function upsertSuggestion(input: SuggestionInput) {
         category: data.category,
         hasCookingPref: data.hasCookingPref,
         defaultQty: data.defaultQty,
+        description: data.description ?? null,
         sortOrder: data.sortOrder,
       })
       .where(eq(suggestions.id, data.id));
@@ -48,6 +56,7 @@ export async function upsertSuggestion(input: SuggestionInput) {
         category: data.category,
         hasCookingPref: data.hasCookingPref,
         defaultQty: data.defaultQty,
+        description: data.description ?? null,
         sortOrder: data.sortOrder,
       })
       .onConflictDoNothing({ target: suggestions.name });

@@ -4,7 +4,6 @@ import { useEffect, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FoodIcon } from "@/components/FoodIcon";
 import { toggleSelectionServed } from "@/lib/actions/admin";
 import type { DashboardData } from "@/lib/dashboard";
 
@@ -163,7 +162,9 @@ export function DashboardLive({
                           <span className="text-xs text-muted-foreground w-4">
                             {isExpanded ? "▾" : "▸"}
                           </span>
-                          <FoodIcon name={t.name} emoji={t.emoji} size={28} />
+                          <span className="text-2xl leading-none" aria-hidden>
+                            {t.emoji}
+                          </span>
                           <span
                             className={`font-medium ${
                               done ? "line-through text-muted-foreground" : ""
@@ -375,11 +376,9 @@ export function DashboardLive({
                                   served ? "line-through" : ""
                                 }`}
                               >
-                                <FoodIcon
-                                  name={s.itemName}
-                                  emoji={s.itemEmoji}
-                                  size={20}
-                                />
+                                <span className="text-lg leading-none" aria-hidden>
+                                  {s.itemEmoji}
+                                </span>
                                 {s.quantity}× {s.itemName}
                                 {s.cookingPref ? (
                                   <span className="text-muted-foreground">

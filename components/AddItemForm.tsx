@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FoodIcon } from "@/components/FoodIcon";
+import { EmojiPicker } from "@/components/EmojiPicker";
 
 const CATEGORY_LABELS: Record<Category, string> = {
   viande: "🥩 Viande",
@@ -39,6 +39,7 @@ export function AddItemForm({
   const [category, setCategory] = useState<Category>("viande");
   const [hasCookingPref, setHasCookingPref] = useState(false);
   const [availableQty, setAvailableQty] = useState<string>("");
+  const [description, setDescription] = useState("");
   const [pending, startTransition] = useTransition();
 
   const [emojiManual, setEmojiManual] = useState(false);
@@ -57,6 +58,7 @@ export function AddItemForm({
     setCategory("viande");
     setHasCookingPref(false);
     setAvailableQty("");
+    setDescription("");
     setEmojiManual(false);
     setCategoryManual(false);
     setCookingManual(false);
@@ -73,6 +75,10 @@ export function AddItemForm({
         category,
         hasCookingPref,
         availableQty: availableQty === "" ? null : Number(availableQty),
+        description:
+          category === "autre" && description.trim()
+            ? description.trim()
+            : null,
         sortOrder: 0,
       });
       reset();
@@ -130,7 +136,7 @@ export function AddItemForm({
                       onClick={() => addSuggestion(s)}
                       className="h-9 gap-1.5"
                     >
-                      <FoodIcon name={s.name} emoji={s.emoji} size={20} />
+                      <span className="text-lg leading-none">{s.emoji}</span>
                       <span>{s.name}</span>
                       <Badge variant="secondary" className="text-[10px] px-1 py-0">
                         {s.defaultQty}
@@ -152,16 +158,13 @@ export function AddItemForm({
           <form onSubmit={submit} className="space-y-3">
             <div className="grid gap-3 grid-cols-[80px_1fr]">
               <div className="space-y-1">
-                <Label htmlFor="emoji">Emoji</Label>
-                <Input
-                  id="emoji"
+                <Label>Emoji</Label>
+                <EmojiPicker
                   value={emoji}
                   onChange={(e) => {
-                    setEmoji(e.target.value);
+                    setEmoji(e);
                     setEmojiManual(true);
                   }}
-                  maxLength={4}
-                  className="text-center text-lg"
                 />
               </div>
               <div className="space-y-1">
@@ -222,6 +225,25 @@ export function AddItemForm({
               </label>
             </div>
 
+            {category === "autre" ? (
+              <div className="space-y-1">
+                <Label htmlFor="description">
+                  Décris cet item (visible par les invités)
+                </Label>
+                <Input
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  maxLength={200}
+                  placeholder="ex: Mes propres marinades pour les brochettes"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Optionnel — utile pour préciser ce qu'est l'item s'il sort
+                  des catégories habituelles.
+                </p>
+              </div>
+            ) : null}
+
             <Button
               type="submit"
               disabled={pending || !name.trim()}
@@ -229,8 +251,7 @@ export function AddItemForm({
             >
               {name.trim() ? (
                 <>
-                  Ajouter
-                  <FoodIcon name={name} emoji={emoji} size={18} />
+                  Ajouter <span className="text-lg leading-none">{emoji}</span>{" "}
                   {name.trim()}
                 </>
               ) : (

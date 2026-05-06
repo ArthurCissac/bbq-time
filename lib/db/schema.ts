@@ -38,6 +38,7 @@ export const items = pgTable(
     category: text("category").notNull().default("viande"),
     hasCookingPref: boolean("has_cooking_pref").notNull().default(false),
     availableQty: integer("available_qty"),
+    description: text("description"),
     sortOrder: integer("sort_order").notNull().default(0),
   },
   (t) => ({
@@ -94,6 +95,7 @@ export const suggestions = pgTable(
     category: text("category").notNull().default("viande"),
     hasCookingPref: boolean("has_cooking_pref").notNull().default(false),
     defaultQty: integer("default_qty").notNull().default(10),
+    description: text("description"),
     sortOrder: integer("sort_order").notNull().default(0),
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },

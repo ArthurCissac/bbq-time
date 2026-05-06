@@ -44,6 +44,7 @@ export const upsertItemSchema = z.object({
   category: categorySchema,
   hasCookingPref: z.boolean(),
   availableQty: z.coerce.number().int().min(0).max(9999).optional().nullable(),
+  description: safeText(200).optional().nullable(),
   sortOrder: z.coerce.number().int().min(0).max(999).default(0),
 });
 
