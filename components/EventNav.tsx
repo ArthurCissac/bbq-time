@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
+import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 const TABS: Array<{ segment: string; label: string }> = [
@@ -15,21 +16,36 @@ export function EventNav({ eventId }: { eventId: string }) {
   const active = useSelectedLayoutSegment();
 
   return (
-    <nav className="inline-flex items-center bg-secondary rounded-full p-1 gap-0.5">
+    <nav className="inline-flex items-center bg-secondary rounded-full p-1 gap-0.5 relative">
       {TABS.map((tab) => {
         const isActive = active === tab.segment;
         return (
           <Link
             key={tab.segment}
             href={`/event/${eventId}/${tab.segment}`}
-            className={cn(
-              "px-4 py-1.5 text-sm font-medium rounded-full transition-colors whitespace-nowrap",
-              isActive
-                ? "bg-coal text-ivory shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
+            className="relative px-4 py-1.5 text-sm font-medium whitespace-nowrap"
           >
-            {tab.label}
+            {isActive ? (
+              <motion.span
+                layoutId="event-nav-indicator"
+                className="absolute inset-0 bg-coal rounded-full shadow-sm"
+                transition={{
+                  type: "spring",
+                  stiffness: 380,
+                  damping: 32,
+                  mass: 0.8,
+                }}
+                aria-hidden
+              />
+            ) : null}
+            <span
+              className={cn(
+                "relative z-10 transition-colors",
+                isActive ? "text-ivory" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {tab.label}
+            </span>
           </Link>
         );
       })}
