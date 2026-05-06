@@ -48,10 +48,17 @@ export function DashboardLive({
           return;
         }
         const json = (await res.json()) as DashboardData;
-        if (!cancelled) {
-          setData(json);
-          setConnected(true);
+        // Re-check après le fetch : si entre-temps une mutation a démarré
+        // ou est en cooldown, on jette ce résultat (il est obsolète).
+        if (
+          cancelled ||
+          pendingRef.current.size > 0 ||
+          Date.now() < cooldownUntilRef.current
+        ) {
+          return;
         }
+        setData(json);
+        setConnected(true);
       } catch {
         setConnected(false);
       }
@@ -129,8 +136,9 @@ export function DashboardLive({
         await toggleSelectionServed(eventId, selectionId, !currentlyServed);
       } finally {
         pendingRef.current.delete(selectionId);
-        // Cooldown : laisser ~600ms au serveur pour bien commit avant que le polling reprenne
-        cooldownUntilRef.current = Date.now() + 600;
+        // Cooldown : laisser le temps au serveur de commit + propager à Neon
+        // avant que le polling tape la DB. 1500ms = safe sur Vercel/Neon.
+        cooldownUntilRef.current = Date.now() + 1500;
         setPendingIds((s) => {
           const next = new Set(s);
           next.delete(selectionId);
