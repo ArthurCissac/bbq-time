@@ -4,17 +4,10 @@ import { desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { events } from "@/lib/db/schema";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { DateField } from "@/components/DateField";
+import { Logo, LogoMark } from "@/components/Logo";
 import { createEvent, activateEvent } from "@/lib/actions/admin";
 
 export const dynamic = "force-dynamic";
@@ -26,31 +19,37 @@ export default async function Home() {
   });
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-orange-100 via-red-50 to-orange-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <header className="text-center relative">
-          <h1 className="text-6xl font-display font-extrabold tracking-tight">
-            BBQ <span className="text-red-700">Time</span>
+    <main className="min-h-screen p-4 md:p-10">
+      <div className="max-w-3xl mx-auto space-y-12 md:space-y-16">
+        {/* Hero */}
+        <header className="pt-6 md:pt-10">
+          <Logo size="lg" className="mb-8" />
+          <h1 className="font-display-tight text-5xl md:text-7xl font-medium leading-[0.95]">
+            La liste de courses
+            <br />
+            <span className="text-ember">d'un BBQ</span>, simplifiée.
           </h1>
-          <p className="text-muted-foreground mt-2">
-            Crée un BBQ, partage le QR, vois ce que tout le monde veut.
+          <p className="mt-6 text-lg text-muted-foreground max-w-xl leading-relaxed">
+            Crée un BBQ. Imprime ton QR. Tes invités scannent et choisissent.
+            Tu sais exactement quoi acheter, et qui veut quoi.
           </p>
-          <Link
-            href="/suggestions"
-            className="inline-block mt-3 text-sm text-red-600 hover:underline"
-          >
-            ⚡ Modifier les suggestions →
-          </Link>
+          <div className="mt-6">
+            <Link
+              href="/suggestions"
+              className="text-sm text-foreground border-b border-foreground/30 hover:border-foreground transition-colors pb-0.5"
+            >
+              Modifier mes suggestions →
+            </Link>
+          </div>
         </header>
 
-        <Card className="border-2 border-orange-200">
-          <CardHeader>
-            <CardTitle>🎩 Nouveau BBQ</CardTitle>
-            <CardDescription>
-              Crée un événement, ajoute les items, partage le QR avec tes invités.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+        {/* Nouveau BBQ */}
+        <section>
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="font-display text-2xl font-medium">Nouveau BBQ</h2>
+            <span className="bbq-pill">Créer</span>
+          </div>
+          <div className="bbq-card p-6">
             <form
               action={async (formData) => {
                 "use server";
@@ -61,111 +60,81 @@ export default async function Home() {
                     : null,
                 });
               }}
-              className="grid gap-4 sm:grid-cols-[1fr_auto_auto] sm:items-end"
+              className="grid gap-4 md:grid-cols-[1fr_auto_auto] md:items-end"
             >
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="name">Nom du BBQ</Label>
                 <Input
                   id="name"
                   name="name"
                   required
                   maxLength={80}
-                  placeholder="BBQ retour de Cécile"
+                  placeholder="Soirée grillades du samedi"
+                  className="h-11"
                 />
               </div>
               <DateField />
-              <Button type="submit" className="bg-red-600 hover:bg-red-700">
-                Créer 🔥
+              <Button
+                type="submit"
+                className="h-11 bg-coal hover:bg-coal/90 text-ivory px-6"
+              >
+                Créer
               </Button>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>📲 Rejoindre un BBQ</CardTitle>
-            <CardDescription>
-              Si quelqu'un t'a partagé un code (sans QR sous la main).
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form
-              action={async (formData) => {
-                "use server";
-                const code = String(formData.get("code") ?? "")
-                  .trim()
-                  .toLowerCase();
-                if (code) redirect(`/bbq/${code}`);
-              }}
-              className="flex gap-2"
-            >
-              <Label htmlFor="code" className="sr-only">
-                Code BBQ
-              </Label>
-              <Input
-                id="code"
-                name="code"
-                required
-                placeholder="ex: k3xa9p"
-                maxLength={12}
-                className="font-mono uppercase tracking-widest"
-              />
-              <Button type="submit" variant="outline">
-                Rejoindre
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        <section className="space-y-3">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <h2 className="text-xl font-bold">Tous les BBQ</h2>
+        {/* Tous les BBQ */}
+        <section>
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="font-display text-2xl font-medium">Tes BBQ</h2>
             <p className="text-xs text-muted-foreground">
-              Le QR fixe (3D) pointe vers le BBQ marqué <strong>● Actif</strong>
+              Le QR fixe pointe vers le BBQ <span className="text-ember font-semibold">Actif</span>
             </p>
           </div>
           {allEvents.length === 0 ? (
-            <p className="text-muted-foreground italic">
-              Aucun BBQ pour l'instant. Lance le premier !
-            </p>
+            <div className="bbq-card p-10 text-center">
+              <LogoMark size={32} className="mx-auto text-muted-foreground" />
+              <p className="mt-3 text-muted-foreground italic">
+                Pas encore de BBQ. Lance le premier ci-dessus.
+              </p>
+            </div>
           ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2">
               {allEvents.map((ev) => (
-                <Card
+                <article
                   key={ev.id}
                   className={
                     ev.isActive
-                      ? "border-2 border-green-500 bg-green-50/30 overflow-hidden"
-                      : "border-2 hover:border-red-400 transition-colors overflow-hidden"
+                      ? "bbq-card overflow-hidden ring-1 ring-ember"
+                      : "bbq-card overflow-hidden bbq-card-clickable"
                   }
                 >
                   <Link
                     href={`/event/${ev.id}/items`}
-                    className="block hover:bg-orange-50/50 transition-colors"
+                    className="block p-5"
                   >
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between gap-2 font-display">
-                        <span className="truncate">{ev.name}</span>
-                        <code className="text-xs bg-orange-100 text-orange-900 px-2 py-1 rounded font-mono shrink-0">
-                          {ev.code}
-                        </code>
-                      </CardTitle>
-                      <CardDescription>
-                        {ev.eventDate
-                          ? new Date(ev.eventDate).toLocaleDateString("fr-FR", {
-                              weekday: "long",
-                              day: "numeric",
-                              month: "long",
-                            })
-                          : "Pas de date"}
-                      </CardDescription>
-                    </CardHeader>
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="font-display text-xl font-medium leading-tight tracking-tight truncate">
+                        {ev.name}
+                      </h3>
+                      <code className="text-[10px] tracking-widest font-mono uppercase bg-secondary text-muted-foreground px-2 py-0.5 rounded shrink-0">
+                        {ev.code}
+                      </code>
+                    </div>
+                    <p className="mt-1.5 text-sm text-muted-foreground">
+                      {ev.eventDate
+                        ? new Date(ev.eventDate).toLocaleDateString("fr-FR", {
+                            weekday: "long",
+                            day: "numeric",
+                            month: "long",
+                          })
+                        : "Date non définie"}
+                    </p>
                   </Link>
-                  <div className="px-6 pb-4 flex justify-end">
+                  <div className="px-5 pb-4 pt-1 flex justify-end">
                     {ev.isActive ? (
-                      <Badge className="bg-green-600 hover:bg-green-700">
-                        ● Actif
-                      </Badge>
+                      <span className="bbq-pill bbq-pill-ember">● Actif</span>
                     ) : (
                       <form
                         action={async () => {
@@ -177,22 +146,58 @@ export default async function Home() {
                           type="submit"
                           variant="outline"
                           size="sm"
-                          className="h-7 text-xs"
+                          className="h-7 text-xs border-coal/20 hover:bg-coal hover:text-ivory hover:border-coal"
                         >
                           Activer
                         </Button>
                       </form>
                     )}
                   </div>
-                </Card>
+                </article>
               ))}
             </div>
           )}
         </section>
 
-        <p className="text-center text-xs text-muted-foreground pt-8">
-          Made with 🔥 by Nexflow
-        </p>
+        {/* Rejoindre via code (compact) */}
+        <section>
+          <div className="bbq-card p-5 flex items-center gap-3 flex-wrap">
+            <p className="text-sm text-muted-foreground">
+              T'as un code BBQ ?
+            </p>
+            <form
+              action={async (formData) => {
+                "use server";
+                const code = String(formData.get("code") ?? "")
+                  .trim()
+                  .toLowerCase();
+                if (code) redirect(`/bbq/${code}`);
+              }}
+              className="flex gap-2 flex-1 min-w-[200px]"
+            >
+              <Label htmlFor="code" className="sr-only">
+                Code BBQ
+              </Label>
+              <Input
+                id="code"
+                name="code"
+                required
+                placeholder="k3xa9p"
+                maxLength={12}
+                className="font-mono uppercase tracking-widest h-9 flex-1"
+              />
+              <Button type="submit" variant="outline" size="sm" className="h-9">
+                Rejoindre
+              </Button>
+            </form>
+          </div>
+        </section>
+
+        <footer className="pt-6 pb-10 text-center">
+          <p className="text-xs text-muted-foreground tracking-wider uppercase">
+            Brasero · par <a href="https://nexflow.fr" className="hover:text-foreground transition-colors">Nexflow</a>
+          </p>
+        </footer>
       </div>
     </main>
   );

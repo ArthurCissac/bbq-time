@@ -14,13 +14,16 @@ export default async function SelectPage({
   if (!ctx.guest) redirect(`/bbq/${code}`);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-4">
+    <main className="min-h-screen p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
-        <header className="text-center mb-6">
-          <h1 className="text-3xl font-display font-extrabold tracking-tight">
+        <header className="text-center mb-8">
+          <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+            Brasero
+          </p>
+          <h1 className="font-display-tight text-4xl font-medium mt-2 leading-tight">
             {ctx.event.name}
           </h1>
-          <div className="mt-1 inline-block h-1 w-12 rounded-full bg-red-700" />
+          <div className="mt-3 mx-auto h-px w-12 bg-foreground/40" />
         </header>
         <GuestSelector
           eventCode={code}

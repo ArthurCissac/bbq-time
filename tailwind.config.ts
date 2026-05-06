@@ -44,12 +44,13 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        bbq: {
-          ember: "#C0392B",
-          flame: "#E67E22",
-          coal: "#2C3E50",
-          cream: "#F5E9D7",
+        ember: {
+          DEFAULT: "hsl(var(--ember))",
+          deep: "hsl(var(--ember-deep))",
         },
+        coal: "hsl(var(--coal))",
+        ivory: "hsl(var(--ivory))",
+        paper: "hsl(var(--paper))",
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],

@@ -4,53 +4,66 @@
 
 @layer base {
   :root {
-    --background: 36 38% 96%;
-    --foreground: 24 22% 12%;
-    --card: 36 50% 99%;
-    --card-foreground: 24 22% 12%;
-    --popover: 36 50% 99%;
-    --popover-foreground: 24 22% 12%;
-    --primary: 4 75% 42%;
-    --primary-foreground: 36 38% 96%;
-    --secondary: 32 75% 92%;
-    --secondary-foreground: 24 22% 12%;
-    --muted: 32 28% 92%;
-    --muted-foreground: 24 12% 38%;
-    --accent: 22 90% 50%;
-    --accent-foreground: 36 38% 96%;
-    --destructive: 0 80% 52%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 28 25% 82%;
-    --input: 28 25% 82%;
-    --ring: 4 75% 42%;
-    --radius: 0.5rem;
+    /* Palette éditoriale — ivoire / charbon / braise */
+    --background: 36 30% 96%;
+    --foreground: 24 14% 11%;
+    --card: 36 38% 99%;
+    --card-foreground: 24 14% 11%;
+    --popover: 36 38% 99%;
+    --popover-foreground: 24 14% 11%;
+    --primary: 24 14% 11%;
+    --primary-foreground: 36 30% 96%;
+    --secondary: 32 26% 92%;
+    --secondary-foreground: 24 14% 11%;
+    --muted: 32 22% 92%;
+    --muted-foreground: 24 8% 38%;
+    --accent: 14 80% 42%;
+    --accent-foreground: 36 30% 96%;
+    --destructive: 4 78% 42%;
+    --destructive-foreground: 36 30% 96%;
+    --border: 28 18% 86%;
+    --input: 28 18% 86%;
+    --ring: 14 80% 42%;
+    --radius: 0.875rem;
+
+    /* Tokens spécifiques marque */
+    --ember: 14 80% 42%;
+    --ember-deep: 4 60% 32%;
+    --coal: 24 14% 11%;
+    --ivory: 36 30% 96%;
+    --paper: 36 38% 99%;
   }
   .dark {
-    --background: 222 30% 10%;
-    --foreground: 0 0% 98%;
-    --card: 222 25% 14%;
-    --card-foreground: 0 0% 98%;
-    --popover: 222 25% 14%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 70% 55%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 20% 20%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 222 20% 20%;
-    --muted-foreground: 215 16% 65%;
-    --accent: 25 95% 53%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 222 20% 20%;
-    --input: 222 20% 20%;
-    --ring: 0 70% 55%;
+    --background: 24 14% 9%;
+    --foreground: 36 30% 96%;
+    --card: 24 12% 13%;
+    --card-foreground: 36 30% 96%;
+    --popover: 24 12% 13%;
+    --popover-foreground: 36 30% 96%;
+    --primary: 36 30% 96%;
+    --primary-foreground: 24 14% 11%;
+    --secondary: 24 10% 18%;
+    --secondary-foreground: 36 30% 96%;
+    --muted: 24 10% 18%;
+    --muted-foreground: 36 14% 65%;
+    --accent: 14 80% 50%;
+    --accent-foreground: 36 30% 96%;
+    --destructive: 4 70% 50%;
+    --destructive-foreground: 36 30% 96%;
+    --border: 24 10% 18%;
+    --input: 24 10% 18%;
+    --ring: 14 80% 50%;
   }
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "ss02", "cv11";
+  }
+  ::selection {
+    background: hsl(var(--accent) / 0.95);
+    color: hsl(var(--accent-foreground));
   }
 }
 
@@ -60,9 +73,13 @@
   }
   .font-display {
     font-family: var(--font-display), Georgia, serif;
-    letter-spacing: -0.02em;
   }
-  /* Subtle grain noise overlay for warm "kraft paper" texture */
+  .font-display-tight {
+    font-family: var(--font-display), Georgia, serif;
+    letter-spacing: -0.04em;
+  }
+
+  /* Grain noise très subtil (kraft texture) */
   .bbq-grain {
     position: relative;
   }
@@ -72,29 +89,53 @@
     inset: 0;
     pointer-events: none;
     z-index: 50;
-    opacity: 0.035;
+    opacity: 0.03;
     mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  .bbq-paper {
-    background:
-      radial-gradient(at 80% 0%, hsl(32 80% 90% / 0.6), transparent 50%),
-      radial-gradient(at 0% 100%, hsl(22 90% 88% / 0.5), transparent 60%),
-      hsl(36 60% 97%);
+
+  /* Card moderne — bordures fines, hover discret */
+  .bbq-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    transition: border-color 0.18s ease, transform 0.18s ease;
   }
-  .bbq-shadow {
-    box-shadow:
-      0 1px 0 hsl(28 25% 82%),
-      0 8px 24px -12px hsl(24 22% 12% / 0.18);
+  .bbq-card:hover {
+    border-color: hsl(var(--foreground) / 0.32);
   }
-  .bbq-card-hover {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .bbq-card-hover:hover {
+  .bbq-card-clickable:hover {
     transform: translateY(-1px);
-    box-shadow:
-      0 1px 0 hsl(28 25% 82%),
-      0 14px 32px -10px hsl(24 22% 12% / 0.22);
+  }
+
+  /* Hairline divider */
+  .bbq-divider {
+    border: none;
+    height: 1px;
+    background: hsl(var(--border));
+  }
+
+  /* Tag/Pill */
+  .bbq-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    background: hsl(var(--secondary));
+    color: hsl(var(--muted-foreground));
+  }
+  .bbq-pill-active {
+    background: hsl(var(--coal));
+    color: hsl(var(--ivory));
+  }
+  .bbq-pill-ember {
+    background: hsl(var(--ember));
+    color: hsl(var(--ivory));
   }
 }
 

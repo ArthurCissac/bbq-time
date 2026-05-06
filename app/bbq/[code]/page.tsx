@@ -6,7 +6,7 @@ import { joinEvent } from "@/lib/actions/guest";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Logo } from "@/components/Logo";
 
 export default async function JoinPage({
   params,
@@ -20,18 +20,21 @@ export default async function JoinPage({
   if (!ev) notFound();
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-100 via-red-50 to-orange-50 p-4">
-      <Card className="w-full max-w-md border-2 border-red-500 shadow-xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-display font-extrabold tracking-tight">
-            {ev.name}
-          </CardTitle>
-          <div className="mx-auto mt-1 h-1 w-12 rounded-full bg-red-700" />
-          <p className="text-muted-foreground mt-3">
-            Rejoins le BBQ et choisis ce que tu veux.
-          </p>
-        </CardHeader>
-        <CardContent>
+    <main className="min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Logo size="md" className="justify-center" />
+        </div>
+        <div className="bbq-card p-8 space-y-6">
+          <div className="text-center">
+            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              Tu es invité au
+            </p>
+            <h1 className="font-display-tight text-4xl font-medium mt-2 leading-tight">
+              {ev.name}
+            </h1>
+            <div className="mx-auto mt-3 h-px w-12 bg-foreground/40" />
+          </div>
           <form
             action={async (formData) => {
               "use server";
@@ -42,7 +45,7 @@ export default async function JoinPage({
             }}
             className="space-y-4"
           >
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="firstName">Ton prénom</Label>
               <Input
                 id="firstName"
@@ -56,13 +59,13 @@ export default async function JoinPage({
             </div>
             <Button
               type="submit"
-              className="w-full h-12 text-lg bg-red-600 hover:bg-red-700"
+              className="w-full h-12 text-base bg-coal hover:bg-coal/90 text-ivory"
             >
-              Je rejoins le BBQ 🔥
+              Je rejoins
             </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </main>
   );
 }

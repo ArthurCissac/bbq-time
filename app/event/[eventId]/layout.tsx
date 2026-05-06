@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { events } from "@/lib/db/schema";
 import { EventNav } from "@/components/EventNav";
+import { Logo } from "@/components/Logo";
 
 export default async function EventLayout({
   children,
@@ -19,25 +20,36 @@ export default async function EventLayout({
   if (!ev) notFound();
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-4 md:p-8">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div>
+    <main className="min-h-screen p-4 md:p-10">
+      <div className="max-w-5xl mx-auto space-y-8">
+        <header className="space-y-6">
+          <div className="flex items-center justify-between">
+            <Link href="/" aria-label="Retour à l'accueil">
+              <Logo size="sm" />
+            </Link>
             <Link
               href="/"
-              className="text-sm text-muted-foreground hover:underline"
+              className="text-xs text-muted-foreground hover:text-foreground tracking-wider uppercase border-b border-transparent hover:border-foreground transition-colors pb-0.5"
             >
               ← Tous les BBQ
             </Link>
-            <h1 className="text-3xl font-display font-extrabold tracking-tight mt-1">
-              {ev.name}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Code : <code className="font-mono">{ev.code}</code>
-            </p>
           </div>
-          <EventNav eventId={ev.id} />
+
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-2">
+            <div>
+              <h1 className="font-display-tight text-4xl md:text-5xl font-medium leading-tight">
+                {ev.name}
+              </h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Code : <code className="font-mono uppercase tracking-widest">{ev.code}</code>
+              </p>
+            </div>
+            <EventNav eventId={ev.id} />
+          </div>
         </header>
+
+        <hr className="bbq-divider" />
+
         {children}
       </div>
     </main>

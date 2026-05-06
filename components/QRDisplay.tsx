@@ -47,11 +47,11 @@ export function QRDisplay({ url, code }: { url: string; code: string }) {
           <div className="relative bg-[#FFF8EE] rounded-2xl border-[3px] border-[#2C1810] p-6 pb-5 shadow-[8px_8px_0_0_#2C1810] print:shadow-none">
             {/* Bandeau supérieur */}
             <div className="text-center mb-4">
-              <p className="font-display font-extrabold text-3xl tracking-tight text-[#2C1810] leading-none">
-                BBQ <span className="text-[#C72E1A]">TIME</span>
+              <p className="font-display font-medium text-4xl tracking-[-0.04em] text-[#2C1810] leading-none">
+                brasero
               </p>
-              <div className="mx-auto h-[3px] w-14 rounded-full bg-[#C72E1A] mt-2" />
-              <p className="text-[10px] uppercase tracking-[0.2em] text-[#7A1A0E] mt-2 font-bold">
+              <div className="mx-auto h-px w-14 bg-[#2C1810] mt-3" />
+              <p className="text-[10px] uppercase tracking-[0.25em] text-[#2C1810]/70 mt-2.5 font-medium">
                 Scanne pour commander
               </p>
             </div>
