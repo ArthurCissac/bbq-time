@@ -2,11 +2,8 @@ import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { events } from "@/lib/db/schema";
-import { joinEvent } from "@/lib/actions/guest";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
+import { JoinForm } from "@/components/JoinForm";
 
 export default async function JoinPage({
   params,
@@ -35,35 +32,7 @@ export default async function JoinPage({
             </h1>
             <div className="mx-auto mt-3 h-px w-12 bg-foreground/40" />
           </div>
-          <form
-            action={async (formData) => {
-              "use server";
-              await joinEvent({
-                code,
-                firstName: formData.get("firstName") as string,
-              });
-            }}
-            className="space-y-4"
-          >
-            <div className="space-y-1.5">
-              <Label htmlFor="firstName">Ton prénom</Label>
-              <Input
-                id="firstName"
-                name="firstName"
-                required
-                maxLength={30}
-                autoFocus
-                placeholder="Arthur"
-                className="text-lg h-12"
-              />
-            </div>
-            <Button
-              type="submit"
-              className="w-full h-12 text-base bg-coal hover:bg-coal/90 text-ivory"
-            >
-              Je rejoins
-            </Button>
-          </form>
+          <JoinForm code={code} />
         </div>
       </div>
     </main>

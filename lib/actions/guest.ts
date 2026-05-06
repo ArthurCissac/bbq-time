@@ -44,7 +44,12 @@ export async function joinEvent(input: JoinEventInput) {
   const limit = await checkLimit(joinLimiter, await clientKey("join"));
   if (!limit.ok) throw new Error("RATE_LIMITED");
 
-  const data = joinEventSchema.parse(input);
+  let data;
+  try {
+    data = joinEventSchema.parse(input);
+  } catch {
+    throw new Error("VALIDATION");
+  }
 
   const event = await db.query.events.findFirst({
     where: eq(events.code, data.code.toLowerCase()),
