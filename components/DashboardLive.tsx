@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,9 +27,18 @@ export function DashboardLive({
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [, startTransition] = useTransition();
 
+  // Garde une ref synchrone pour que le polling sache si une mutation est en cours
+  const pendingRef = useRef<Set<string>>(new Set());
+  // Petit cooldown : après une mutation, on attend 600ms avant de reprendre le polling
+  // pour laisser le serveur le temps de commit avant le prochain fetch.
+  const cooldownUntilRef = useRef<number>(0);
+
   useEffect(() => {
     let cancelled = false;
     const tick = async () => {
+      // Skip si mutation en cours OU cooldown actif
+      if (pendingRef.current.size > 0) return;
+      if (Date.now() < cooldownUntilRef.current) return;
       try {
         const res = await fetch(`/api/events/${eventId}/data`, {
           cache: "no-store",
@@ -78,6 +87,7 @@ export function DashboardLive({
     selectionId: string,
     currentlyServed: boolean,
   ) => {
+    pendingRef.current.add(selectionId);
     setPendingIds((s) => new Set(s).add(selectionId));
     // optimistic update
     setData((d) => ({
@@ -118,6 +128,9 @@ export function DashboardLive({
       try {
         await toggleSelectionServed(eventId, selectionId, !currentlyServed);
       } finally {
+        pendingRef.current.delete(selectionId);
+        // Cooldown : laisser ~600ms au serveur pour bien commit avant que le polling reprenne
+        cooldownUntilRef.current = Date.now() + 600;
         setPendingIds((s) => {
           const next = new Set(s);
           next.delete(selectionId);
