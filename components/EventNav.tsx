@@ -5,10 +5,10 @@ import { useSelectedLayoutSegment } from "next/navigation";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-const TABS: Array<{ segment: string; label: string }> = [
+const TABS: Array<{ segment: string; label: string; shortLabel?: string }> = [
   { segment: "items", label: "Items" },
   { segment: "qr", label: "QR" },
-  { segment: "dashboard", label: "Dashboard" },
+  { segment: "dashboard", label: "Dashboard", shortLabel: "Live" },
   { segment: "guests", label: "Invités" },
   { segment: "me", label: "Moi" },
 ];
@@ -24,7 +24,7 @@ export function EventNav({ eventId }: { eventId: string }) {
           <Link
             key={tab.segment}
             href={`/event/${eventId}/${tab.segment}`}
-            className="relative flex-1 md:flex-none px-4 py-1.5 text-sm font-medium whitespace-nowrap text-center"
+            className="relative flex-1 md:flex-none min-w-0 px-2.5 md:px-4 py-1.5 text-[13px] md:text-sm font-medium whitespace-nowrap text-center"
           >
             {isActive ? (
               <motion.span
@@ -45,7 +45,14 @@ export function EventNav({ eventId }: { eventId: string }) {
                 isActive ? "text-ivory" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              {tab.label}
+              {tab.shortLabel ? (
+                <>
+                  <span className="md:hidden">{tab.shortLabel}</span>
+                  <span className="hidden md:inline">{tab.label}</span>
+                </>
+              ) : (
+                tab.label
+              )}
             </span>
           </Link>
         );
