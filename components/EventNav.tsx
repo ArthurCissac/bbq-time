@@ -9,6 +9,7 @@ const TABS: Array<{ segment: string; label: string }> = [
   { segment: "items", label: "Items" },
   { segment: "qr", label: "QR Code" },
   { segment: "dashboard", label: "Dashboard" },
+  { segment: "me", label: "🍽️ Moi" },
 ];
 
 export function EventNav({ eventId }: { eventId: string }) {

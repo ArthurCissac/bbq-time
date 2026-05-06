@@ -173,6 +173,88 @@ export async function upsertSelection(
   revalidatePath(`/admin/${event.id}/dashboard`);
 }
 
+export async function joinEventById(input: { eventId: string; firstName: string }) {
+  const event = await db.query.events.findFirst({
+    where: eq(events.id, input.eventId),
+  });
+  if (!event) throw new Error("EVENT_NOT_FOUND");
+
+  const data = joinEventSchema.parse({
+    code: event.code,
+    firstName: input.firstName,
+  });
+
+  const existingToken = readGuestCookie(event.id);
+  if (existingToken) {
+    const existing = await db.query.guests.findFirst({
+      where: and(eq(guests.token, existingToken), eq(guests.eventId, event.id)),
+    });
+    if (existing) {
+      revalidatePath(`/event/${event.id}/me`);
+      return;
+    }
+  }
+
+  const [created] = await db
+    .insert(guests)
+    .values({
+      eventId: event.id,
+      firstName: data.firstName,
+    })
+    .returning();
+
+  setGuestCookie(event.id, created.token);
+  revalidatePath(`/event/${event.id}/me`);
+  revalidatePath(`/event/${event.id}/dashboard`);
+}
+
+export async function getGuestContextByEventId(eventId: string) {
+  const event = await db.query.events.findFirst({
+    where: eq(events.id, eventId),
+  });
+  if (!event) return null;
+
+  const token = readGuestCookie(event.id);
+  if (!token) return { event, guest: null, items: [], selections: [], committedByOthers: {} as Record<string, number> };
+
+  const guest = await db.query.guests.findFirst({
+    where: and(eq(guests.token, token), eq(guests.eventId, event.id)),
+  });
+  if (!guest) return { event, guest: null, items: [], selections: [], committedByOthers: {} as Record<string, number> };
+
+  const eventItems = await db.query.items.findMany({
+    where: eq(items.eventId, event.id),
+    orderBy: (i, { asc }) => [asc(i.sortOrder), asc(i.name)],
+  });
+
+  const guestSelections = await db.query.selections.findMany({
+    where: eq(selections.guestId, guest.id),
+  });
+
+  const otherGuests = await db.query.guests.findMany({
+    where: and(eq(guests.eventId, event.id), ne(guests.id, guest.id)),
+  });
+  const otherIds = otherGuests.map((g) => g.id);
+  const otherSels =
+    otherIds.length === 0
+      ? []
+      : await db.query.selections.findMany({
+          where: inArray(selections.guestId, otherIds),
+        });
+  const committedByOthers: Record<string, number> = {};
+  for (const s of otherSels) {
+    committedByOthers[s.itemId] =
+      (committedByOthers[s.itemId] ?? 0) + s.quantity;
+  }
+
+  return { event, guest, items: eventItems, selections: guestSelections, committedByOthers };
+}
+
+export async function leaveEventById(eventId: string) {
+  cookies().delete(`bbq_guest:${eventId}`);
+  revalidatePath(`/event/${eventId}/me`);
+}
+
 export async function leaveEvent(eventCode: string) {
   const event = await db.query.events.findFirst({
     where: eq(events.code, eventCode.toLowerCase()),
