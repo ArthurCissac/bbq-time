@@ -134,7 +134,7 @@ export function GuestsList({
                             {s.servedAt ? (
                               <Badge
                                 variant="outline"
-                                className="text-[10px] border-green-500 text-green-700"
+                                className="text-[10px] border-green-500/60 text-green-700 dark:text-green-400"
                               >
                                 ✓ Servi
                               </Badge>

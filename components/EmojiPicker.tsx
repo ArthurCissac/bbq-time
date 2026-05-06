@@ -108,7 +108,7 @@ export function EmojiPicker({
             onClick={() => setOpen(false)}
             aria-hidden
           />
-          <div className="absolute z-50 mt-1 w-[min(92vw,380px)] left-0 rounded-lg border-2 border-orange-200 bg-card shadow-xl p-2 max-h-[60vh] overflow-y-auto">
+          <div className="absolute z-50 mt-1 w-[min(92vw,380px)] left-0 rounded-lg border-2 border-border bg-card shadow-xl p-2 max-h-[60vh] overflow-y-auto">
             <Input
               placeholder="Filtrer par catégorie…"
               value={search}
@@ -127,8 +127,8 @@ export function EmojiPicker({
                       setSearch("");
                     }}
                     className={cn(
-                      "h-9 w-9 rounded hover:bg-orange-100 flex items-center justify-center",
-                      value === e.emoji ? "ring-2 ring-red-500 bg-red-50" : "",
+                      "h-9 w-9 rounded hover:bg-muted flex items-center justify-center",
+                      value === e.emoji ? "ring-2 ring-primary bg-primary/10" : "",
                     )}
                   >
                     <ItemEmoji value={e.emoji} size={22} />
@@ -152,9 +152,9 @@ export function EmojiPicker({
                             setOpen(false);
                           }}
                           className={cn(
-                            "h-9 w-9 rounded hover:bg-orange-100 flex items-center justify-center",
+                            "h-9 w-9 rounded hover:bg-muted flex items-center justify-center",
                             value === e
-                              ? "ring-2 ring-red-500 bg-red-50"
+                              ? "ring-2 ring-primary bg-primary/10"
                               : "",
                           )}
                         >

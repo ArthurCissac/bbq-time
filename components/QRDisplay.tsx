@@ -108,7 +108,7 @@ export function QRDisplay({ url, code }: { url: string; code: string }) {
 
       <div className="space-y-1 print:hidden">
         <p className="text-xs text-muted-foreground">URL fixe</p>
-        <code className="block break-all bg-orange-50 p-2 rounded font-mono text-xs">
+        <code className="block break-all bg-secondary p-2 rounded font-mono text-xs">
           {url}
         </code>
       </div>

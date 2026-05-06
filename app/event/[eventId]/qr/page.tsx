@@ -28,7 +28,7 @@ export default async function QRPage({
 
   return (
     <div className="space-y-4">
-      <Card className="border-2 border-orange-200">
+      <Card className="border-2 border-border">
         <CardContent className="p-6 flex flex-col items-center text-center">
           <div className="flex items-center gap-2 mb-2">
             <h2 className="text-2xl font-bold">📲 QR fixe (imprimé 3D)</h2>
@@ -41,7 +41,7 @@ export default async function QRPage({
             )}
           </div>
           <p className="text-muted-foreground mb-6 max-w-md">
-            Ce QR pointe vers <code className="bg-orange-50 px-1.5 py-0.5 rounded">/now</code> et
+            Ce QR pointe vers <code className="bg-secondary px-1.5 py-0.5 rounded">/now</code> et
             redirige toujours vers le BBQ <strong>actif</strong>. C'est celui à
             imprimer en 3D — tu n'auras jamais à le changer.
           </p>
@@ -67,7 +67,7 @@ export default async function QRPage({
               </p>
             </form>
           ) : (
-            <p className="text-sm text-green-700 mt-4 font-medium">
+            <p className="text-sm text-green-700 dark:text-green-400 mt-4 font-medium">
               ✓ Ton QR fixe redirige actuellement vers ce BBQ.
             </p>
           )}
@@ -81,7 +81,7 @@ export default async function QRPage({
             Si quelqu'un ne peut pas scanner, partage ce lien direct vers
             <strong> ce BBQ uniquement</strong> :
           </p>
-          <code className="block break-all bg-orange-50 p-2 rounded font-mono text-xs">
+          <code className="block break-all bg-secondary p-2 rounded font-mono text-xs">
             {directUrl}
           </code>
           <p className="text-sm text-muted-foreground">

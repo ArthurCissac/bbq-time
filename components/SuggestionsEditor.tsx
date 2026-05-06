@@ -78,7 +78,7 @@ function AddRow() {
   };
 
   return (
-    <Card className="border-2 border-orange-200">
+    <Card className="border-2 border-border">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm">
           ➕ Ajouter une suggestion (réutilisable)

@@ -211,7 +211,7 @@ export function DashboardLive({
         </span>
       </div>
 
-      <Card className="border-2 border-orange-200">
+      <Card className="border-2">
         <CardHeader>
           <CardTitle>📋 Liste de courses</CardTitle>
           <p className="text-sm text-muted-foreground">
@@ -234,15 +234,17 @@ export function DashboardLive({
                       key={t.itemId}
                       className={`rounded overflow-hidden border transition-colors ${
                         done
-                          ? "bg-green-50/60 border-green-200"
-                          : "bg-orange-50"
+                          ? "bg-green-500/10 border-green-500/30 dark:bg-green-500/15"
+                          : "bg-secondary border-border"
                       }`}
                     >
                       <button
                         type="button"
                         onClick={() => toggleExpand(t.itemId)}
                         className={`w-full flex items-center justify-between p-2 transition-colors text-left ${
-                          done ? "hover:bg-green-100" : "hover:bg-orange-100"
+                          done
+                            ? "hover:bg-green-500/15"
+                            : "hover:bg-muted"
                         }`}
                       >
                         <span className="flex items-center gap-2">
@@ -260,7 +262,7 @@ export function DashboardLive({
                           {done ? (
                             <Badge
                               variant="outline"
-                              className="text-[10px] border-green-500 text-green-700"
+                              className="text-[10px] border-green-500/60 text-green-700 dark:text-green-400"
                             >
                               ✓ Tout servi
                             </Badge>
@@ -282,7 +284,7 @@ export function DashboardLive({
                             )}
                           <span
                             className={`text-xl font-black min-w-[2rem] text-right ${
-                              done ? "text-muted-foreground" : "text-red-600"
+                              done ? "text-muted-foreground" : "text-foreground"
                             }`}
                           >
                             {t.remainingQty}
@@ -312,22 +314,22 @@ export function DashboardLive({
                                 disabled={pendingIds.has(p.selectionId)}
                                 className={`w-full flex items-center justify-between gap-2 p-2 rounded border disabled:cursor-wait transition-colors ${
                                   p.served
-                                    ? "bg-red-50 border-red-200 hover:bg-red-100"
-                                    : "border-transparent hover:bg-green-50 hover:border-green-200"
+                                    ? "bg-destructive/10 border-destructive/30 hover:bg-destructive/15"
+                                    : "border-transparent hover:bg-green-500/10 hover:border-green-500/30"
                                 }`}
                               >
                                 <span
                                   className={`flex items-center gap-2 ${
                                     p.served
-                                      ? "line-through text-red-700"
+                                      ? "line-through text-destructive"
                                       : ""
                                   }`}
                                 >
                                   <span
                                     className={`inline-flex items-center justify-center w-5 h-5 rounded border-2 text-xs ${
                                       p.served
-                                        ? "bg-red-600 border-red-600 text-white"
-                                        : "border-gray-300"
+                                        ? "bg-destructive border-destructive text-destructive-foreground"
+                                        : "border-border"
                                     }`}
                                   >
                                     {p.served ? "✓" : ""}
@@ -338,7 +340,7 @@ export function DashboardLive({
                                   <span
                                     className={
                                       p.served
-                                        ? "text-sm text-red-600/70"
+                                        ? "text-sm text-destructive/70"
                                         : "text-sm text-muted-foreground"
                                     }
                                   >
@@ -349,7 +351,7 @@ export function DashboardLive({
                                       variant="outline"
                                       className={`text-[10px] ${
                                         p.served
-                                          ? "border-red-300 text-red-700"
+                                          ? "border-destructive/40 text-destructive"
                                           : ""
                                       }`}
                                     >
@@ -361,8 +363,8 @@ export function DashboardLive({
                                 <span
                                   className={`text-xs font-medium ${
                                     p.served
-                                      ? "text-red-700"
-                                      : "text-green-700"
+                                      ? "text-destructive"
+                                      : "text-green-700 dark:text-green-400"
                                   }`}
                                 >
                                   {p.served ? "Annuler" : "Marquer servi ✓"}
@@ -384,7 +386,7 @@ export function DashboardLive({
             </p>
           ) : null}
           {data.totals.length > 0 && data.totals.every((t) => t.allServed) ? (
-            <p className="text-green-700 font-medium text-center py-2">
+            <p className="text-green-700 dark:text-green-400 font-medium text-center py-2">
               ✓ Tout a été servi !
             </p>
           ) : null}
@@ -420,7 +422,7 @@ export function DashboardLive({
                     {allServed ? (
                       <Badge
                         variant="outline"
-                        className="text-[10px] border-green-500 text-green-700"
+                        className="text-[10px] border-green-500/60 text-green-700 dark:text-green-400"
                       >
                         Tout servi ✓
                       </Badge>

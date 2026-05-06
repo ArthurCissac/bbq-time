@@ -151,7 +151,7 @@ export function AddItemForm({
         </Card>
       ) : null}
 
-      <Card className="border-2 border-orange-200">
+      <Card className="border-2 border-border">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm">✏️ Ajouter manuellement</CardTitle>
         </CardHeader>

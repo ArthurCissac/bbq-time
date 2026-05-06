@@ -22,7 +22,7 @@ export default async function MePage({
 
   if (!ctx.guest) {
     return (
-      <Card className="border-2 border-orange-200 max-w-md mx-auto">
+      <Card className="border-2 border-border max-w-md mx-auto">
         <CardHeader>
           <CardTitle className="font-display">🍽️ Tu manges aussi ?</CardTitle>
           <p className="text-sm text-muted-foreground">
