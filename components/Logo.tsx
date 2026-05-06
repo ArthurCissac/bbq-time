@@ -13,17 +13,12 @@ export function LogoMark({
       height={size}
       viewBox="0 0 48 48"
       className={className}
-      aria-label="Brasero"
+      aria-label="Barbecue"
     >
-      {/* Flamme externe — silhouette géométrique */}
+      {/* Flamme pleine — silhouette géométrique solide */}
       <path
         d="M24 4 C 30 12, 38 16, 38 26 C 38 35, 32 42, 24 42 C 16 42, 10 35, 10 26 C 10 19, 14 17, 16 13 C 17 16, 19 17, 21 14 C 22 10, 23 7, 24 4 Z"
         fill="currentColor"
-      />
-      {/* Flamme interne — vide négatif */}
-      <path
-        d="M24 17 C 27 21, 30 24, 30 29 C 30 33, 27 35, 24 35 C 21 35, 18 33, 18 29 C 18 26, 20 24, 21 22 C 22 24, 23 24, 24 22 Z"
-        fill="var(--background)"
       />
     </svg>
   );
