@@ -31,9 +31,9 @@ type Pick = {
 export function GuestSelector({
   eventCode,
   firstName,
-  items,
+  items: initialItems,
   initialSelections,
-  committedByOthers,
+  committedByOthers: initialCommittedByOthers,
 }: {
   eventCode: string;
   firstName: string;
@@ -41,6 +41,11 @@ export function GuestSelector({
   initialSelections: Selection[];
   committedByOthers: Record<string, number>;
 }) {
+  const [items, setItems] = useState<Item[]>(initialItems);
+  const [committedByOthers, setCommittedByOthers] = useState<
+    Record<string, number>
+  >(initialCommittedByOthers);
+
   const [picks, setPicks] = useState<Record<string, Pick>>(() => {
     const m: Record<string, Pick> = {};
     for (const s of initialSelections) {
@@ -52,6 +57,40 @@ export function GuestSelector({
     }
     return m;
   });
+
+  // Polling 3s : rafraîchir le stock restant (committedByOthers) + items à jour
+  useEffect(() => {
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const res = await fetch(
+          `/api/bbq/${eventCode.toLowerCase()}/stock`,
+          { cache: "no-store" },
+        );
+        if (!res.ok) return;
+        const json = (await res.json()) as {
+          committedByOthers: Record<string, number>;
+          items: Item[];
+        };
+        if (cancelled) return;
+        setCommittedByOthers(json.committedByOthers);
+        setItems(json.items);
+      } catch {}
+    };
+    const interval = setInterval(tick, 3000);
+    const onFocus = () => tick();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tick();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [eventCode]);
 
   // Debounced sync : on n'envoie au serveur que ~250ms après le dernier click
   // sur un item donné. L'UI répond instantanément (pas de disabled pending).
