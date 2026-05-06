@@ -1,6 +1,7 @@
-import { eq, inArray } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { events, items, guests, selections } from "@/lib/db/schema";
+import { neon } from "@neondatabase/serverless";
+
+// Raw Neon SQL — bypass Drizzle pour éviter tout cache de query.
+const sqlRaw = neon(process.env.DATABASE_URL!);
 
 export type DashboardData = {
   eventName: string;
@@ -44,44 +45,80 @@ export type DashboardData = {
   }>;
 };
 
+type EventRow = {
+  id: string;
+  name: string;
+  code: string;
+};
+
+type ItemRow = {
+  id: string;
+  event_id: string;
+  name: string;
+  emoji: string;
+  category: string;
+  has_cooking_pref: boolean;
+  available_qty: number | null;
+  description: string | null;
+  sort_order: number;
+};
+
+type GuestRow = {
+  id: string;
+  event_id: string;
+  first_name: string;
+  joined_at: string;
+  served_at: string | null;
+};
+
+type SelectionRow = {
+  id: string;
+  guest_id: string;
+  item_id: string;
+  quantity: number;
+  cooking_pref: string | null;
+  notes: string | null;
+  served_at: string | null;
+};
+
 export async function getDashboardData(
   eventId: string,
 ): Promise<DashboardData | null> {
-  const ev = await db.query.events.findFirst({
-    where: eq(events.id, eventId),
-  });
-  if (!ev) return null;
+  const evRows = (await sqlRaw`SELECT id, name, code FROM events WHERE id = ${eventId}`) as EventRow[];
+  if (evRows.length === 0) return null;
+  const ev = evRows[0];
 
-  const eventItems = await db
-    .select()
-    .from(items)
-    .where(eq(items.eventId, eventId));
-  eventItems.sort((a, b) => {
-    if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
-    return a.name.localeCompare(b.name);
-  });
+  const eventItems = (await sqlRaw`
+    SELECT id, event_id, name, emoji, category, has_cooking_pref,
+           available_qty, description, sort_order
+    FROM items
+    WHERE event_id = ${eventId}
+    ORDER BY sort_order ASC, name ASC
+  `) as ItemRow[];
 
-  const eventGuests = await db
-    .select()
-    .from(guests)
-    .where(eq(guests.eventId, eventId));
-  eventGuests.sort((a, b) => a.joinedAt.getTime() - b.joinedAt.getTime());
+  const eventGuests = (await sqlRaw`
+    SELECT id, event_id, first_name, joined_at::text, served_at::text
+    FROM guests
+    WHERE event_id = ${eventId}
+    ORDER BY joined_at ASC
+  `) as GuestRow[];
 
-  const guestIds = eventGuests.map((g) => g.id);
-  const allSelections =
-    guestIds.length === 0
-      ? []
-      : await db
-          .select()
-          .from(selections)
-          .where(inArray(selections.guestId, guestIds));
+  let allSelections: SelectionRow[] = [];
+  if (eventGuests.length > 0) {
+    const ids = eventGuests.map((g) => g.id);
+    allSelections = (await sqlRaw`
+      SELECT id, guest_id, item_id, quantity, cooking_pref, notes, served_at::text
+      FROM selections
+      WHERE guest_id = ANY(${ids}::uuid[])
+    `) as SelectionRow[];
+  }
 
   const itemMap = new Map(eventItems.map((i) => [i.id, i]));
   const guestMap = new Map(eventGuests.map((g) => [g.id, g]));
 
   const totals = eventItems.map((item) => {
     const selsForItem = allSelections.filter(
-      (s) => s.itemId === item.id && s.quantity > 0,
+      (s) => s.item_id === item.id && s.quantity > 0,
     );
     const cookingBreakdown: Record<string, number> = {};
     let quantity = 0;
@@ -97,21 +134,21 @@ export async function getDashboardData(
     }> = [];
     for (const s of selsForItem) {
       quantity += s.quantity;
-      const isServed = !!s.servedAt;
+      const isServed = !!s.served_at;
       if (!isServed) remainingQty += s.quantity;
-      const guest = guestMap.get(s.guestId);
+      const guest = guestMap.get(s.guest_id);
       participants.push({
         selectionId: s.id,
-        guestId: s.guestId,
-        guestName: guest?.firstName ?? "?",
+        guestId: s.guest_id,
+        guestName: guest?.first_name ?? "?",
         quantity: s.quantity,
-        cookingPref: s.cookingPref,
+        cookingPref: s.cooking_pref,
         notes: s.notes,
         served: isServed,
       });
-      if (s.cookingPref) {
-        cookingBreakdown[s.cookingPref] =
-          (cookingBreakdown[s.cookingPref] ?? 0) + s.quantity;
+      if (s.cooking_pref) {
+        cookingBreakdown[s.cooking_pref] =
+          (cookingBreakdown[s.cooking_pref] ?? 0) + s.quantity;
       }
     }
     return {
@@ -119,10 +156,10 @@ export async function getDashboardData(
       name: item.name,
       emoji: item.emoji,
       category: item.category,
-      hasCookingPref: item.hasCookingPref,
+      hasCookingPref: item.has_cooking_pref,
       quantity,
       remainingQty,
-      availableQty: item.availableQty,
+      availableQty: item.available_qty,
       cookingBreakdown,
       participants,
       allServed: selsForItem.length > 0 && remainingQty === 0,
@@ -131,25 +168,25 @@ export async function getDashboardData(
 
   const guestData = eventGuests.map((g) => {
     const sels = allSelections
-      .filter((s) => s.guestId === g.id && s.quantity > 0)
+      .filter((s) => s.guest_id === g.id && s.quantity > 0)
       .map((s) => {
-        const item = itemMap.get(s.itemId);
+        const item = itemMap.get(s.item_id);
         return {
           selectionId: s.id,
-          itemId: s.itemId,
+          itemId: s.item_id,
           itemName: item?.name ?? "?",
           itemEmoji: item?.emoji ?? "❓",
           quantity: s.quantity,
-          cookingPref: s.cookingPref,
+          cookingPref: s.cooking_pref,
           notes: s.notes,
-          servedAt: s.servedAt ? s.servedAt.toISOString() : null,
+          servedAt: s.served_at ?? null,
         };
       });
     return {
       id: g.id,
-      firstName: g.firstName,
-      joinedAt: g.joinedAt.toISOString(),
-      servedAt: g.servedAt ? g.servedAt.toISOString() : null,
+      firstName: g.first_name,
+      joinedAt: g.joined_at,
+      servedAt: g.served_at ?? null,
       selections: sels,
     };
   });
