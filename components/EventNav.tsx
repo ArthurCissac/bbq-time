@@ -9,6 +9,7 @@ const TABS: Array<{ segment: string; label: string }> = [
   { segment: "items", label: "Items" },
   { segment: "qr", label: "QR" },
   { segment: "dashboard", label: "Dashboard" },
+  { segment: "guests", label: "Invités" },
   { segment: "me", label: "Moi" },
 ];
 

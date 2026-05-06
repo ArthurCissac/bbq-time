@@ -28,17 +28,41 @@ export function DashboardLive({
   const [, startTransition] = useTransition();
 
   useEffect(() => {
-    const es = new EventSource(`/api/events/${eventId}/stream`);
-    es.addEventListener("init", (e) => {
-      setConnected(true);
-      setData(JSON.parse((e as MessageEvent).data));
-    });
-    es.addEventListener("update", (e) => {
-      setData(JSON.parse((e as MessageEvent).data));
-    });
-    es.addEventListener("ping", () => setConnected(true));
-    es.onerror = () => setConnected(false);
-    return () => es.close();
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const res = await fetch(`/api/events/${eventId}/data`, {
+          cache: "no-store",
+        });
+        if (!res.ok) {
+          setConnected(false);
+          return;
+        }
+        const json = (await res.json()) as DashboardData;
+        if (!cancelled) {
+          setData(json);
+          setConnected(true);
+        }
+      } catch {
+        setConnected(false);
+      }
+    };
+    tick();
+    const interval = setInterval(tick, 3000);
+
+    const onFocus = () => tick();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tick();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisible);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [eventId]);
 
   const toggleExpand = (itemId: string) => {

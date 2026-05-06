@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { desc } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { events } from "@/lib/db/schema";
+import { events, guests } from "@/lib/db/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,17 @@ export default async function Home() {
     orderBy: [desc(events.createdAt)],
     limit: 20,
   });
+
+  const counts = await db
+    .select({
+      eventId: guests.eventId,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(guests)
+    .groupBy(guests.eventId);
+  const guestCount = new Map<string, number>(
+    counts.map((c) => [c.eventId, Number(c.count)]),
+  );
 
   return (
     <main className="min-h-screen p-4 md:p-10">
@@ -128,15 +139,23 @@ export default async function Home() {
                         {ev.code}
                       </code>
                     </div>
-                    <p className="mt-1.5 text-sm text-muted-foreground">
-                      {ev.eventDate
-                        ? new Date(ev.eventDate).toLocaleDateString("fr-FR", {
-                            weekday: "long",
-                            day: "numeric",
-                            month: "long",
-                          })
-                        : "Date non définie"}
-                    </p>
+                    <div className="mt-1.5 flex items-center gap-2 flex-wrap text-sm text-muted-foreground">
+                      <span>
+                        {ev.eventDate
+                          ? new Date(ev.eventDate).toLocaleDateString("fr-FR", {
+                              weekday: "long",
+                              day: "numeric",
+                              month: "long",
+                            })
+                          : "Date non définie"}
+                      </span>
+                      {(guestCount.get(ev.id) ?? 0) > 0 ? (
+                        <span className="bbq-pill">
+                          👥 {guestCount.get(ev.id)} invité
+                          {(guestCount.get(ev.id) ?? 0) > 1 ? "s" : ""}
+                        </span>
+                      ) : null}
+                    </div>
                   </Link>
                   <div className="px-5 pb-4 pt-1 flex items-center justify-between">
                     <DeleteEventButton eventId={ev.id} eventName={ev.name} />
