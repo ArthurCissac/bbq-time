@@ -4,17 +4,11 @@ import { useRef } from "react";
 import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 
-const FLAME_SVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='80' height='80'>
-  <defs>
-    <linearGradient id='fl' x1='0' y1='0' x2='0' y2='1'>
-      <stop offset='0' stop-color='#FFD27A'/>
-      <stop offset='0.5' stop-color='#EA580C'/>
-      <stop offset='1' stop-color='#7A1A0E'/>
-    </linearGradient>
-  </defs>
-  <circle cx='16' cy='16' r='15' fill='#FFFFFF' stroke='#7A1A0E' stroke-width='2'/>
-  <path fill='url(#fl)' stroke='#3D1308' stroke-width='1' stroke-linejoin='round' d='M16 5 C 18 9 22 11 22 16 C 22 20 19 23 16 23 C 13 23 10 20 11 16 C 11 13 13 12 13 9 C 14 11 15 11 16 9 Z'/>
-  <path fill='#FFD27A' opacity='0.85' d='M16 11 C 17 13 19 14 19 17 C 19 19 17 20 16 20 C 14 20 13 19 14 17 C 14 15 15 14 16 13 Z'/>
+// Flamme identique au LogoMark — charbon plein avec vide négatif
+const FLAME_SVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' width='80' height='80'>
+  <circle cx='24' cy='24' r='23' fill='#FFFFFF' stroke='#2C1810' stroke-width='1.5'/>
+  <path fill='#2C1810' d='M24 8 C 29 14, 36 18, 36 27 C 36 34, 30 40, 24 40 C 18 40, 12 34, 12 27 C 12 21, 15 19, 17 16 C 18 18, 20 19, 21 16 C 22 13, 23 11, 24 8 Z'/>
+  <path fill='#FFFFFF' d='M24 19 C 27 22, 29 25, 29 29 C 29 32, 27 34, 24 34 C 21 34, 19 32, 19 29 C 19 27, 21 25, 22 23 C 22 24, 23 24, 24 23 Z'/>
 </svg>`;
 
 const flameDataUrl = `data:image/svg+xml;base64,${
