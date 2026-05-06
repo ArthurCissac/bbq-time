@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getGuestContext } from "@/lib/actions/guest";
 import { GuestSelector } from "@/components/GuestSelector";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Toaster } from "@/components/ui/sonner";
 
 export default async function SelectPage({
@@ -16,6 +17,9 @@ export default async function SelectPage({
   return (
     <main className="min-h-screen p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
+        <div className="flex justify-end mb-2">
+          <ThemeToggle />
+        </div>
         <header className="text-center mb-8">
           <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
             Barbecue
