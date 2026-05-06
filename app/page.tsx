@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { DateField } from "@/components/DateField";
 import { Logo, LogoMark } from "@/components/Logo";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { DeleteEventButton } from "@/components/DeleteEventButton";
 import { createEvent, activateEvent } from "@/lib/actions/admin";
 
 export const dynamic = "force-dynamic";
@@ -137,7 +138,8 @@ export default async function Home() {
                         : "Date non définie"}
                     </p>
                   </Link>
-                  <div className="px-5 pb-4 pt-1 flex justify-end">
+                  <div className="px-5 pb-4 pt-1 flex items-center justify-between">
+                    <DeleteEventButton eventId={ev.id} eventName={ev.name} />
                     {ev.isActive ? (
                       <span className="bbq-pill bbq-pill-ember">● Actif</span>
                     ) : (

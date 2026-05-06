@@ -24,7 +24,7 @@
     --border: 28 18% 86%;
     --input: 28 18% 86%;
     --ring: 14 80% 42%;
-    --radius: 0.875rem;
+    --radius: 1rem;
 
     /* Tokens spécifiques marque */
     --ember: 14 80% 42%;
@@ -98,7 +98,7 @@
   .bbq-card {
     background: hsl(var(--card));
     border: 1px solid hsl(var(--border));
-    border-radius: var(--radius);
+    border-radius: 1.25rem;
     transition: border-color 0.18s ease, transform 0.18s ease;
   }
   .bbq-card:hover {

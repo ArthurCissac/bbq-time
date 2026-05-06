@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useRef, useEffect } from "react";
 import { upsertSelection } from "@/lib/actions/guest";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,26 +52,41 @@ export function GuestSelector({
     }
     return m;
   });
-  const [pending, startTransition] = useTransition();
 
-  const update = (
-    itemId: string,
-    next: Pick,
-    item: Item,
-  ) => {
-    setPicks((p) => ({ ...p, [itemId]: next }));
-    startTransition(async () => {
+  // Debounced sync : on n'envoie au serveur que ~250ms après le dernier click
+  // sur un item donné. L'UI répond instantanément (pas de disabled pending).
+  const timersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const latestRef = useRef<Record<string, { pick: Pick; item: Item }>>({});
+
+  useEffect(() => {
+    const timers = timersRef.current;
+    return () => {
+      for (const t of Object.values(timers)) clearTimeout(t);
+    };
+  }, []);
+
+  const scheduleSync = (item: Item, next: Pick) => {
+    latestRef.current[item.id] = { pick: next, item };
+    if (timersRef.current[item.id]) clearTimeout(timersRef.current[item.id]);
+    timersRef.current[item.id] = setTimeout(async () => {
+      const last = latestRef.current[item.id];
+      if (!last) return;
       try {
         await upsertSelection(eventCode, {
-          itemId,
-          quantity: next.quantity,
-          cookingPref: item.hasCookingPref ? next.cookingPref : null,
+          itemId: item.id,
+          quantity: last.pick.quantity,
+          cookingPref: last.item.hasCookingPref ? last.pick.cookingPref : null,
           notes: null,
         });
       } catch {
         toast.error("Impossible d'enregistrer. Réessaie.");
       }
-    });
+    }, 250);
+  };
+
+  const update = (itemId: string, next: Pick, item: Item) => {
+    setPicks((p) => ({ ...p, [itemId]: next }));
+    scheduleSync(item, next);
   };
 
   const grouped = items.reduce<Record<string, Item[]>>((acc, it) => {
@@ -156,7 +171,7 @@ export function GuestSelector({
                           variant="outline"
                           size="icon"
                           className="h-11 w-11 text-xl"
-                          disabled={pick.quantity === 0 || pending}
+                          disabled={pick.quantity === 0}
                           onClick={() =>
                             update(
                               item.id,
@@ -177,7 +192,7 @@ export function GuestSelector({
                           type="button"
                           size="icon"
                           className="h-11 w-11 text-xl bg-red-600 hover:bg-red-700"
-                          disabled={pending || atCap || pick.quantity >= 20}
+                          disabled={atCap || pick.quantity >= 20}
                           onClick={() =>
                             update(
                               item.id,
@@ -214,7 +229,6 @@ export function GuestSelector({
                                 ? "bg-red-600 hover:bg-red-700"
                                 : ""
                             }
-                            disabled={pending}
                             onClick={() =>
                               update(
                                 item.id,
