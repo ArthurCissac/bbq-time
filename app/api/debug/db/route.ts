@@ -1,27 +1,41 @@
 import { NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
+import { eq } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { events, guests } from "@/lib/db/schema";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET() {
   const url = process.env.DATABASE_URL ?? "";
-  // Mask password for safety
   const masked = url.replace(/:([^:@]+)@/, ":****@");
-  // Just the host
   const host = url.match(/@([^/]+)\//)?.[1] ?? "?";
 
   try {
     const sql = neon(url);
-    const r = await sql`SELECT
-      current_database() as db,
-      current_user as usr,
-      inet_server_addr()::text as srv,
-      now()::text as now,
-      (SELECT count(*) FROM events) as events_count,
-      (SELECT count(*) FROM guests) as guests_count`;
+    const raw = await sql`
+      SELECT id, first_name, event_id::text
+      FROM guests
+      WHERE event_id = '8606822a-9ddb-4179-9215-19c69c1650b7'
+    `;
+
+    // Drizzle path
+    const ev = await db.query.events.findFirst({
+      where: eq(events.id, "8606822a-9ddb-4179-9215-19c69c1650b7"),
+    });
+    const drizzleGuests = await db.query.guests.findMany({
+      where: eq(guests.eventId, "8606822a-9ddb-4179-9215-19c69c1650b7"),
+    });
+
     return NextResponse.json(
-      { masked_url: masked, host, info: r[0] },
+      {
+        host,
+        masked_url: masked,
+        raw_sql_guests: raw,
+        drizzle_event: ev,
+        drizzle_guests: drizzleGuests,
+      },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (e: unknown) {
