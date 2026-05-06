@@ -20,6 +20,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmojiPicker } from "@/components/EmojiPicker";
+import { ItemEmoji } from "@/components/ItemEmoji";
 
 const CATEGORY_LABELS: Record<Category, string> = {
   viande: "🥩 Viande",
@@ -170,7 +171,7 @@ function AddRow() {
             disabled={pending || !name.trim()}
             className="w-full bg-red-600 hover:bg-red-700"
           >
-            Ajouter <span className="ml-1">{emoji}</span>{" "}
+            Ajouter <ItemEmoji value={emoji} size={18} className="ml-1" />{" "}
             {name.trim() || "..."}
           </Button>
         </form>
@@ -220,7 +221,7 @@ function EditRow({ row }: { row: SuggestionRow }) {
       <Card>
         <CardContent className="flex items-center justify-between gap-3 p-3">
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <span className="text-3xl shrink-0 leading-none">{row.emoji}</span>
+            <ItemEmoji value={row.emoji} size={32} className="shrink-0" />
             <div className="min-w-0">
               <p className="font-semibold truncate">{row.name}</p>
               <div className="flex gap-1.5 mt-0.5 flex-wrap items-center">

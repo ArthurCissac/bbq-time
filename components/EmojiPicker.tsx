@@ -4,11 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { ItemEmoji } from "@/components/ItemEmoji";
 
 const EMOJI_GROUPS: Array<{ label: string; emojis: string[] }> = [
   {
     label: "🥩 Viandes",
     emojis: [
+      ":saucisse:",
       "🍖", "🥩", "🍗", "🌭", "🥓", "🍔", "🍢", "🥚", "🍳",
       "🦆", "🐑", "🐔", "🐖",
     ],
@@ -94,10 +96,10 @@ export function EmojiPicker({
         type="button"
         variant="outline"
         onClick={() => setOpen((o) => !o)}
-        className="w-full h-11 text-2xl"
+        className="w-full h-11 flex items-center justify-center"
         aria-label="Choisir un emoji"
       >
-        {value || "🍖"}
+        <ItemEmoji value={value || "🍖"} size={28} />
       </Button>
       {open ? (
         <>
@@ -125,11 +127,11 @@ export function EmojiPicker({
                       setSearch("");
                     }}
                     className={cn(
-                      "h-9 w-9 text-xl rounded hover:bg-orange-100 flex items-center justify-center",
+                      "h-9 w-9 rounded hover:bg-orange-100 flex items-center justify-center",
                       value === e.emoji ? "ring-2 ring-red-500 bg-red-50" : "",
                     )}
                   >
-                    {e.emoji}
+                    <ItemEmoji value={e.emoji} size={22} />
                   </button>
                 ))}
               </div>
@@ -150,13 +152,13 @@ export function EmojiPicker({
                             setOpen(false);
                           }}
                           className={cn(
-                            "h-9 w-9 text-xl rounded hover:bg-orange-100 flex items-center justify-center",
+                            "h-9 w-9 rounded hover:bg-orange-100 flex items-center justify-center",
                             value === e
                               ? "ring-2 ring-red-500 bg-red-50"
                               : "",
                           )}
                         >
-                          {e}
+                          <ItemEmoji value={e} size={22} />
                         </button>
                       ))}
                     </div>

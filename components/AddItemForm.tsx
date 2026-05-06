@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmojiPicker } from "@/components/EmojiPicker";
+import { ItemEmoji } from "@/components/ItemEmoji";
 
 const CATEGORY_LABELS: Record<Category, string> = {
   viande: "🥩 Viande",
@@ -136,7 +137,7 @@ export function AddItemForm({
                       onClick={() => addSuggestion(s)}
                       className="h-9 gap-1.5"
                     >
-                      <span className="text-lg leading-none">{s.emoji}</span>
+                      <ItemEmoji value={s.emoji} size={20} />
                       <span>{s.name}</span>
                       <Badge variant="secondary" className="text-[10px] px-1 py-0">
                         {s.defaultQty}
@@ -251,8 +252,7 @@ export function AddItemForm({
             >
               {name.trim() ? (
                 <>
-                  Ajouter <span className="text-lg leading-none">{emoji}</span>{" "}
-                  {name.trim()}
+                  Ajouter <ItemEmoji value={emoji} size={18} /> {name.trim()}
                 </>
               ) : (
                 "Ajouter un item…"
