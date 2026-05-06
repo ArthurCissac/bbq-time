@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 
 // Flamme identique au LogoMark — charbon plein avec creux ivoire
@@ -18,17 +17,6 @@ const flameDataUrl = `data:image/svg+xml;base64,${
 }`;
 
 export function QRDisplay({ url, code }: { url: string; code: string }) {
-  const hiresRef = useRef<HTMLCanvasElement>(null);
-
-  const downloadPNG = () => {
-    const canvas = hiresRef.current;
-    if (!canvas) return;
-    const a = document.createElement("a");
-    a.download = `bbq-time-qr-${code}.png`;
-    a.href = canvas.toDataURL("image/png");
-    a.click();
-  };
-
   const copyURL = async () => {
     await navigator.clipboard.writeText(url);
   };
@@ -87,25 +75,6 @@ export function QRDisplay({ url, code }: { url: string; code: string }) {
         </div>
       </div>
 
-      {/* Canvas caché pour download haute résolution */}
-      <div style={{ display: "none" }}>
-        <QRCodeCanvas
-          ref={hiresRef}
-          value={url}
-          size={1600}
-          level="H"
-          marginSize={4}
-          fgColor="#000000"
-          bgColor="#FFFFFF"
-          imageSettings={{
-            src: flameDataUrl,
-            width: 320,
-            height: 320,
-            excavate: true,
-          }}
-        />
-      </div>
-
       <div className="space-y-1 print:hidden">
         <p className="text-xs text-muted-foreground">URL fixe</p>
         <code className="block break-all bg-secondary p-2 rounded font-mono text-xs">
@@ -114,15 +83,6 @@ export function QRDisplay({ url, code }: { url: string; code: string }) {
       </div>
 
       <div className="flex gap-2 flex-wrap print:hidden">
-        <Button
-          onClick={downloadPNG}
-          className="bg-red-600 hover:bg-red-700"
-        >
-          📥 Télécharger PNG (impression 3D)
-        </Button>
-        <Button onClick={() => window.print()} variant="outline">
-          🖨 Imprimer
-        </Button>
         <Button onClick={copyURL} variant="outline">
           📋 Copier le lien
         </Button>
