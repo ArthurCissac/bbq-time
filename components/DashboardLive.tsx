@@ -133,7 +133,48 @@ export function DashboardLive({
     }));
     startTransition(async () => {
       try {
-        await toggleSelectionServed(eventId, selectionId, !currentlyServed);
+        const result = await toggleSelectionServed(
+          eventId,
+          selectionId,
+          !currentlyServed,
+        );
+        if (!result?.ok) {
+          throw new Error("toggle returned ok=false");
+        }
+      } catch (err) {
+        console.error("[toggleSelection] failed", err);
+        // Rollback optimistic update
+        setData((d) => ({
+          ...d,
+          totals: d.totals.map((t) => {
+            const target = t.participants.find(
+              (p) => p.selectionId === selectionId,
+            );
+            if (!target) return t;
+            const reverted = t.participants.map((p) =>
+              p.selectionId === selectionId
+                ? { ...p, served: currentlyServed }
+                : p,
+            );
+            const newRemaining = reverted
+              .filter((p) => !p.served)
+              .reduce((acc, p) => acc + p.quantity, 0);
+            return {
+              ...t,
+              participants: reverted,
+              remainingQty: newRemaining,
+              allServed: reverted.length > 0 && newRemaining === 0,
+            };
+          }),
+          guests: d.guests.map((g) => ({
+            ...g,
+            selections: g.selections.map((s) =>
+              s.selectionId === selectionId
+                ? { ...s, servedAt: currentlyServed ? new Date().toISOString() : null }
+                : s,
+            ),
+          })),
+        }));
       } finally {
         pendingRef.current.delete(selectionId);
         // Cooldown : laisser le temps au serveur de commit + propager à Neon

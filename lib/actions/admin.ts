@@ -3,8 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq, and, ne } from "drizzle-orm";
+import { neon } from "@neondatabase/serverless";
 import { db } from "@/lib/db";
 import { events, items, guests, selections } from "@/lib/db/schema";
+
+const sqlRaw = neon(process.env.DATABASE_URL!);
 import {
   createEventSchema,
   upsertItemSchema,
@@ -136,11 +139,19 @@ export async function toggleSelectionServed(
   selectionId: string,
   served: boolean,
 ) {
-  await db
-    .update(selections)
-    .set({ servedAt: served ? new Date() : null })
-    .where(eq(selections.id, selectionId));
+  // Raw SQL pour bypass tout cache Drizzle et garantir le commit
+  const newServedAt = served ? new Date().toISOString() : null;
+  const rows = await sqlRaw`
+    UPDATE selections
+    SET served_at = ${newServedAt}
+    WHERE id = ${selectionId}
+    RETURNING id, served_at
+  `;
   revalidatePath(`/event/${eventId}/dashboard`);
+  if (rows.length === 0) {
+    throw new Error(`Selection ${selectionId} not found`);
+  }
+  return { ok: true, servedAt: rows[0].served_at };
 }
 
 export async function updateItemQty(
